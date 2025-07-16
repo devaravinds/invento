@@ -12,7 +12,7 @@ export class Outlet {
     @Prop({ required: true })
     address: string;
     @Prop({ type: String, ref: 'Organization', required: true })
-    organizationId: String; 
+    organizationId: string; 
 }
 
 export const OutletSchema = SchemaFactory.createForClass(Outlet);

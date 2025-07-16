@@ -13,7 +13,8 @@ import { OrganizationModule } from './organization/organization.module';
     MongooseModule.forRoot(DATABASE_URL), 
     OrganizationModule, 
     OutletModule, 
-    ProductModule, InventoryItemModule
+    ProductModule, 
+    InventoryItemModule
   ],
   controllers: [AppController],
   providers: [AppService],

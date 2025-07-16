@@ -1,5 +1,5 @@
 import { BadRequestException, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { AddOutletDto } from './outlet.dto';
+import { AddOutletDto, OutletResponseDto } from './outlet.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Outlet, OutletDocument } from './outlet.entity';
 import { Model } from 'mongoose';
@@ -30,4 +30,25 @@ export class OutletService extends BaseService<OutletDocument> {
             throw new InternalServerErrorException(`Error creating outlet: ${error.message}`);
         }
     }
+
+    async getOutletByPhone(phone: string): Promise<OutletResponseDto> {
+        try {
+            const outlet = await this._outletRepository.findOne({ phone: phone });
+            if (!outlet) {
+                throw new BadRequestException(`Outlet with phone ${phone} does not exist.`);
+            }
+            const organization = await this._organizationService.getOrganizationById(outlet.organizationId);
+            const outletResponse: OutletResponseDto = {
+                id: outlet._id.toString(),
+                organizationName: organization.name,
+                name: outlet.name,
+                address: outlet.address,
+                phone: outlet.phone
+            }
+            return outletResponse;
+        } catch (error) {
+            throw new InternalServerErrorException(`Error retrieving outlet by phone: ${error.message}`);
+        }
+    }
+        
 }

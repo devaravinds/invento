@@ -42,4 +42,17 @@ export class OrganizationService extends BaseService<OrganizationDocument> {
         throw new InternalServerErrorException(`Error updating organization: ${error.message}`);
       }
     }
+
+    async getOrganizationById(id: string): Promise<OrganizationDocument> {
+        try {
+            const organization = await this._organizationRepository.findById(id);
+            if (!organization) {
+                throw new InternalServerErrorException(`Organization with ID ${id} does not exist.`);
+            }
+            return organization;
+        } catch (error) {
+            throw new InternalServerErrorException(`Error retrieving organization by ID: ${error.message}`);
+        }
+    }
+      
 }

@@ -1,0 +1,35 @@
+services:
+  invento:
+    container_name: invento-backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: invento-backend:latest
+    restart: always
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/app
+    command: npm run start
+    networks:
+      - invento-network
+    depends_on:
+      - invento-db
+
+  invento-db:
+    container_name: invento-db
+    image: mongo:latest
+    restart: always
+    ports:
+      - '27018:27017'
+    volumes:
+      - invento-db-data:/data/db
+    networks:
+      - invento-network
+
+volumes:
+  invento-db-data:
+
+networks:
+  invento-network:
+    driver: bridge
