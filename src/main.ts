@@ -7,6 +7,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle("Invento")
     .setDescription("Invento API Documentation")
+    .addBearerAuth()
     .setVersion("1.0")
     .build();
   const document = SwaggerModule.createDocument(app, config);
