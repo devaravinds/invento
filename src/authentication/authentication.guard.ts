@@ -1,16 +1,32 @@
 // auth/jwt-auth.guard.ts
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { JwtConfig } from 'src/config/jwt.config';
+import { UserRoles } from 'src/user/user.enum';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly reflector: Reflector
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const token = this.extractTokenFromHeader(request);
+    const organizationId = request.headers.organizationId;
+
+    const requiredRoles = this.reflector.getAllAndOverride<UserRoles[]>('roles', [
+      context.getHandler(),
+      context.getClass()
+    ]);
+
+    const isOrganizationIdNotMandatory = this.reflector.getAllAndOverride<Boolean>('isOrganizationIdNotMandatory', [
+      context.getHandler(),
+      context.getClass()
+    ])
 
     if (!token) {
       throw new UnauthorizedException('Token not provided');
@@ -24,7 +40,21 @@ export class AuthGuard implements CanActivate {
     } catch (err) {
       throw new UnauthorizedException('Invalid token');
     }
-
+    const userRoles = request.user['roles']
+    if(isOrganizationIdNotMandatory) {
+      return true;
+    }
+    else {
+      if (!organizationId) {
+        throw new UnauthorizedException('Organization ID is required');
+      }
+      if(requiredRoles?.length) {
+        const userRoleForOrganization = userRoles.find(role => role.organizationId === organizationId);
+        if (!userRoleForOrganization || !requiredRoles.includes(userRoleForOrganization.role)) {
+          throw new UnauthorizedException('User does not have the required role for this organization');
+        }
+      }
+    }
     return true;
   }
 

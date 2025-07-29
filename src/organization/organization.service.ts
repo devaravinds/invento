@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { AddOrganizationDto as AddOrganizationDto } from './organization.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -25,18 +25,18 @@ export class OrganizationService extends BaseService<OrganizationDocument> {
         }
     }
 
-    async updateOrganization(id: string, addOrganizationDto: AddOrganizationDto) {
+    async updateOrganization(id: string, addOrganizationDto: AddOrganizationDto): Promise<string> {
       try {
         const organizationExists = await this.checkExists(id);
         if (!organizationExists) {
-          return {status: HttpStatus.NOT_FOUND, message: 'Organization not found', id: id};
+          throw new NotFoundException('Organization not found')
         }
       } catch (error) {
         throw new InternalServerErrorException(`Error checking organization existence: ${error.message}`);
       }
       try {
         const updatedOrganization = await this._organizationRepository.findByIdAndUpdate(id, addOrganizationDto);
-        return {status: HttpStatus.OK, message: 'Organization updated successfully', id: updatedOrganization._id};
+        return updatedOrganization._id.toString();
       }
       catch (error) {
         throw new InternalServerErrorException(`Error updating organization: ${error.message}`);

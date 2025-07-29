@@ -1,5 +1,5 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
-import { RegisterDto } from "./user.dto";
+import { BadRequestException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { RegisterDto, UpdateUserDto } from "./user.dto";
 import { Model } from "mongoose";
 import { User, UserDocument } from "./user.entity";
 import { BaseService } from "src/base/base.service";
@@ -40,5 +40,23 @@ export class UserService extends BaseService<UserDocument> {
         } catch (error) {
             throw new InternalServerErrorException(`Error checking email or phone existence: ${error.message}`);
         }
+    }
+
+    async updateUser(id: string, updateDto: UpdateUserDto): Promise<string> {
+      try {
+        const userExists = await this.checkExists(id);
+        if (!userExists) {
+          throw new NotFoundException("User not found")
+        }
+      } catch (error) {
+        throw new InternalServerErrorException(`Error checking user existence: ${error.message}`);
+      }
+      try {
+        const updatedUser = await this._userRepository.findByIdAndUpdate(id, updateDto);
+        return updatedUser._id.toString();
+      }
+      catch (error) {
+        throw new InternalServerErrorException(`Error updating user: ${error.message}`);
+      }    
     }
 }

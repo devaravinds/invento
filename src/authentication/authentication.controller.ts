@@ -2,6 +2,7 @@ import { Body, Controller, Post } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { LoginDto, LoginResponse } from "./authentication.dto";
 import { AuthenticationService } from "./authentication.service";
+import { OrganizationIdExempted } from "./authentication.decorator";
 
 @Controller('auth')
 @ApiTags('Authentication APIs')
@@ -11,6 +12,7 @@ export class AuthenticationController {
     
     @Post('login')
     @ApiOperation({ summary: 'Login!' })
+    @OrganizationIdExempted()
     async login(@Body() loginDto: LoginDto) {
         const loginResponse: LoginResponse = await this._authenticationService.login(loginDto);
         return {

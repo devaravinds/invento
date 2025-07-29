@@ -17,7 +17,7 @@ export class User {
     @Prop({ required: true, unique: true })
     phone: string;
     @Prop({type: Role, default: []})
-    role?: Role[];
+    roles?: Role[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
