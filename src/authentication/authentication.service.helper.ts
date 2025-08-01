@@ -18,6 +18,7 @@ export class AuthenticationServiceHelper {
                 phone: user.phone,
                 name: `${user.firstName} ${user.lastName}`,
                 email: user.email,
+                role: user.roles
             },
         };
     }
