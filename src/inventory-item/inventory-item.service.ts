@@ -74,7 +74,6 @@ export class InventoryItemService extends BaseService<InventoryItemDocument> {
                     return {
                         productId: product.id,
                         name: product.name,
-                        price: product.price,
                         quantityAvailable: item.quantity
                     };
                 });
@@ -100,7 +99,6 @@ export class InventoryItemService extends BaseService<InventoryItemDocument> {
                 const inventoryItemWithProductInfo: InventoryItemResponseDto = {
                     productId: product.id,
                     name: product.name,
-                    price: product.price,
                     quantityAvailable: inventoryItem.quantity,
                     description: product.description
                 };

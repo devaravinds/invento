@@ -5,3 +5,9 @@ export enum UserRoles {
     MODERATOR = 'Moderator',
     SUPER_ADMIN = 'SuperAdmin'
 }
+
+export enum InvitationStatus {
+    PENDING = 'Pending',
+    ACCEPTED = 'Accepted',
+    REJECTED = 'Rejected'
+}

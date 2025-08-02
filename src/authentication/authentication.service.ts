@@ -34,7 +34,8 @@ export class AuthenticationService {
         const token = this._jwtService.sign(
             { 
                 id: user.id,
-                roles: user.roles
+                roles: user.roles,
+                isSuperAdmin: user.isSuperAdmin
             },
             {
                 secret: secretKeyAccessToken,

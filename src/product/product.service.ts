@@ -13,10 +13,14 @@ export class ProductService extends BaseService<ProductDocument> {
     ) {
         super(_productRepository);
     }
-    async addProduct(addProductDto: AddProductDto) {
-        const newProduct = new this._productRepository(addProductDto);
+    async addProduct(organizationId: string, addProductDto: AddProductDto) {
+        const newProduct: Product = {
+            name: addProductDto.name,
+            description: addProductDto.description,
+            organizationId
+        };
         try {
-            const createdProduct = await newProduct.save();
+            const createdProduct = await this._productRepository.create(newProduct);
             return {status: HttpStatus.CREATED, message: 'Product created successfully', id: createdProduct._id};
         }
         catch (error) {
@@ -33,7 +37,6 @@ export class ProductService extends BaseService<ProductDocument> {
             return {
                 id: product._id.toString(),
                 name: product.name,
-                price: product.price,
                 description: product.description
             };
         }
@@ -48,7 +51,6 @@ export class ProductService extends BaseService<ProductDocument> {
             return products.map(product => ({
                 id: product._id.toString(),
                 name: product.name,
-                price: product.price,
                 description: product.description
             }));
         } catch (error) {

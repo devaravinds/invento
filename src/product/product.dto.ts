@@ -4,8 +4,6 @@ export class AddProductDto {
     @ApiProperty()
     name: string;
     @ApiProperty()
-    price: number;
-    @ApiProperty()
     description: string;
 }
 
@@ -15,9 +13,6 @@ export class ProductResponseDto {
 
     @ApiProperty()
     name: string;
-
-    @ApiProperty()
-    price: number;
 
     @ApiProperty()
     description: string;

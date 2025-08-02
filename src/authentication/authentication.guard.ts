@@ -4,7 +4,7 @@ import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { JwtConfig } from 'src/config/jwt.config';
-import { UserRoles } from 'src/user/user.enum';
+import { InvitationStatus, UserRoles } from 'src/user/user.enum';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -16,7 +16,8 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const token = this.extractTokenFromHeader(request);
-    const organizationId = request.headers.organizationId;
+    const organizationId = request.headers['organization-id'];
+    request['organizationId'] = organizationId;
 
     const requiredRoles = this.reflector.getAllAndOverride<UserRoles[]>('roles', [
       context.getHandler(),
@@ -41,6 +42,7 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException('Invalid token');
     }
     const userRoles = request.user['roles']
+    const isSuperAdmin = request.user['isSuperAdmin'];
     if(isOrganizationIdNotMandatory) {
       return true;
     }
@@ -48,8 +50,11 @@ export class AuthGuard implements CanActivate {
       if (!organizationId) {
         throw new UnauthorizedException('Organization ID is required');
       }
+      if (isSuperAdmin) {
+        return true;
+      }
       if(requiredRoles?.length) {
-        const userRoleForOrganization = userRoles.find(role => role.organizationId === organizationId);
+        const userRoleForOrganization = userRoles.find(role => role.organizationId === organizationId && role.invitationStatus === InvitationStatus.ACCEPTED);
         if (!userRoleForOrganization || !requiredRoles.includes(userRoleForOrganization.role)) {
           throw new UnauthorizedException('User does not have the required role for this organization');
         }

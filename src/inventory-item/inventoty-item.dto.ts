@@ -17,9 +17,6 @@ export class InventoryItemResponseDto {
     name: string;
 
     @ApiProperty()
-    price: number;
-
-    @ApiProperty()
     quantityAvailable: number;
 
     @ApiProperty({ required: false })

@@ -15,7 +15,7 @@ export class OrganizationController {
 
   @Post()
   @ApiOperation({ summary: 'Add a new organization' })
-  @Roles(UserRoles.ADMIN)
+  @Roles(UserRoles.ADMIN, UserRoles.SUPER_ADMIN)
   @OrganizationIdExempted()
   async addOrganization(@Body() addOrganizationDto: AddOrganizationDto) {
     return await this._organizationService.addOrganization(addOrganizationDto);
@@ -23,6 +23,7 @@ export class OrganizationController {
 
   @Put(':id')
   @ApiOperation({ summary: 'Update Organization Details' })
+  @Roles(UserRoles.ADMIN, UserRoles.SUPER_ADMIN)
   async updateOrganization(@Body() addOrganizationDto: AddOrganizationDto, @Param('id') id: string) {
     await this._organizationService.updateOrganization(id, addOrganizationDto);
     return {status: HttpStatus.OK, message: 'Organization Updated Successfully', id: id}

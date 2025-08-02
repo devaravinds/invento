@@ -11,4 +11,16 @@ export class BaseService<T extends Document> {
       throw new InternalServerErrorException(`Error checking existence: ${error.message}`);
     }
   }
+
+  async getById(id: string): Promise<T> {
+    try {
+      const document = await this.model.findById(id);
+      if (!document) {
+        return undefined;
+      }
+      return document;
+    } catch (error) {
+      throw new InternalServerErrorException(`Error retrieving document: ${error.message}`);
+    }
+  }
 }
