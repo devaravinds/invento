@@ -2,7 +2,7 @@ import { Model } from "mongoose";
 import { AddPartnerDto } from "./partner.dto";
 import { Partner, PartnerDocument } from "./partner.entity";
 import { BaseService } from "src/base/base.service";
-import { Inject, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 
 export class PartnerService extends BaseService<PartnerDocument> {
