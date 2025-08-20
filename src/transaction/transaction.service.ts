@@ -1,0 +1,53 @@
+import { Model } from "mongoose";
+import { AddTransactionDto } from "./transaction.dto";
+import { Transaction, TransactionDocument } from "./transaction.entity";
+import { BaseService } from "src/base/base.service";
+import { BadRequestException, Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { ProductService } from "src/product/product.service";
+import { OutletService } from "src/outlet/outlet.service";
+import { OrganizationService } from "src/organization/organization.service";
+import { TransactionStatus } from "./transaction.enum";
+
+@Injectable()
+export class TransactionService extends BaseService<TransactionDocument> {
+
+    constructor(
+        @InjectModel(Transaction.name)
+        private readonly _transactionRepository: Model<TransactionDocument>,
+        private readonly _productService: ProductService,
+        private readonly _outletService: OutletService,
+        private readonly _organizationService: OrganizationService
+    ) {
+        super(_transactionRepository);
+    }
+
+    async addTransaction(organizationId: string, addTransactionDto: AddTransactionDto) {
+        const { productId, outletId, partnerId, rate, count, transactionType } = addTransactionDto;
+        
+        const productExists = await this._productService.getById(productId);
+        if (!productExists || productExists.organizationId !== organizationId) {
+            throw new BadRequestException(`Product with ID ${productId} does not exist.`);
+        }
+
+        const outletExists = await this._outletService.getById(outletId);
+        if (!outletExists || outletExists.organizationId !== organizationId) {
+            throw new BadRequestException(`Outlet with ID ${outletId} does not exist.`);
+        }
+
+        const organizationExists = await this._organizationService.checkExists(organizationId);
+        if (!organizationExists) {
+            throw new BadRequestException(`Organization with ID ${organizationId} does not exist.`);
+        }
+
+        const newTransaction: Transaction = {
+            productId,
+            outletId,
+            partnerId,
+            rate,
+            count,
+            transactionType,
+            transactionStatus: TransactionStatus.PENDING
+        } 
+    }
+}
