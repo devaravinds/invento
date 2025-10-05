@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { AddOrganizationDto as AddOrganizationDto } from './organization.dto';
+import { AddOrganizationDto as AddOrganizationDto, OrganizationResponseDto } from './organization.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Organization, OrganizationDocument } from './organization.entity';
@@ -44,15 +44,40 @@ export class OrganizationService extends BaseService<OrganizationDocument> {
     }
 
     async getOrganizationById(id: string): Promise<OrganizationDocument> {
-        try {
-            const organization = await this._organizationRepository.findById(id);
-            if (!organization) {
-                throw new InternalServerErrorException(`Organization with ID ${id} does not exist.`);
-            }
-            return organization;
-        } catch (error) {
-            throw new InternalServerErrorException(`Error retrieving organization by ID: ${error.message}`);
-        }
+      try {
+          const organization = await this._organizationRepository.findById(id);
+          if (!organization) {
+              throw new InternalServerErrorException(`Organization with ID ${id} does not exist.`);
+          }
+          return organization;
+      } catch (error) {
+          throw new InternalServerErrorException(`Error retrieving organization by ID: ${error.message}`);
+      }
     }
-      
+
+    async getOrganizationByIds(ids: string[]): Promise<OrganizationResponseDto[]> {
+      try {
+          const organizations = await this._organizationRepository.find({ _id: { $in: ids } });
+          return organizations.map(org => ({
+              id: org._id.toString(),
+              name: org.name,
+              phone: org.phone,
+          }));
+      } catch (error) {
+          throw new InternalServerErrorException(`Error retrieving organizations by IDs: ${error.message}`);
+      }
+    }
+
+    async getAllOrganizations(): Promise<OrganizationResponseDto[]> {
+      try {
+          const organizations = await this._organizationRepository.find();
+          return organizations.map(org => ({
+              id: org._id.toString(),
+              name: org.name,
+              phone: org.phone,
+          }));
+      } catch (error) {
+          throw new InternalServerErrorException(`Error retrieving all organizations: ${error.message}`);
+      }
+    }
 }

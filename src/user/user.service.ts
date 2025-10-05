@@ -1,5 +1,5 @@
-import { BadRequestException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
-import { RegisterDto, UpdateUserDto } from "./user.dto";
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { RegisterDto, UpdateUserDto, UserResponseDto } from "./user.dto";
 import { Model } from "mongoose";
 import { User, UserDocument } from "./user.entity";
 import { BaseService } from "src/base/base.service";
@@ -7,6 +7,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { AuthenticationServiceHelper } from "src/authentication/authentication.service.helper";
 import { OrganizationService } from "src/organization/organization.service";
 import { InvitationStatus, UserRoles } from "./user.enum";
+import { OrganizationResponseDto } from "src/organization/organization.dto";
 
 @Injectable()
 export class UserService extends BaseService<UserDocument> {
@@ -126,5 +127,45 @@ export class UserService extends BaseService<UserDocument> {
         } catch (error) {
           throw new InternalServerErrorException(`Error accepting invitation: ${error.message}`);
         }
+    }
+
+    async getCurrentUsersOrganizations(userId: string): Promise<OrganizationResponseDto[]> {
+        try {
+          const user = await this.getById(userId);
+          if (!user) {
+            throw new NotFoundException(`User with ID ${userId} does not exist.`);
+          }
+          if(user.isSuperAdmin) {
+            return await this._organizationService.getAllOrganizations();
+          }
+          const organizationIds = user.roles
+            .filter(role => role.invitationStatus === InvitationStatus.ACCEPTED)
+            .map(role => role.organizationId);
+          return await this._organizationService.getOrganizationByIds(organizationIds);
+        } catch (error) {
+          throw new InternalServerErrorException(`Error retrieving user's organizations: ${error.message}`);
+        }
+    }
+
+    async getAllUsers():Promise<UserResponseDto[]> {
+      try {
+        const allUsers = await this._userRepository.find();
+        return allUsers.map(user => ({
+          id: user._id.toString(),
+          phone: user.phone,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          roles: user.roles.map(role => ({
+            organization: role.organizationId,
+            role: role.role,
+            invitationStatus: role.invitationStatus
+          })),
+          isSuperAdmin: user.isSuperAdmin ? user.isSuperAdmin : undefined,
+        }));
+      } catch (error) {
+        throw new InternalServerErrorException(`Error retrieving all users: ${error.message}`);
+      }
+      
     }
 }

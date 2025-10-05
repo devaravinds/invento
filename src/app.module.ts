@@ -9,6 +9,8 @@ import { UserModule } from './user/user.module';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { PartnerModule } from './person/partner.module';
 import { JwtService } from '@nestjs/jwt';
+import { TransactionModule } from './transaction/transaction.module';
+import { UnitModule } from './unit/unit.module';
 
 @Module({
   imports: [
@@ -19,7 +21,9 @@ import { JwtService } from '@nestjs/jwt';
     OutletModule, 
     ProductModule, 
     InventoryItemModule,
-    PartnerModule
+    TransactionModule,
+    PartnerModule,
+    UnitModule
   ],
 })
 export class AppModule {}

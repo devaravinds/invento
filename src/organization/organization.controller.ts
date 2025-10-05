@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
 import { AddOrganizationDto as AddOrganizationDto } from './organization.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';

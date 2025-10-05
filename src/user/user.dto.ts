@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { InvitationStatus } from "./user.enum";
 
 export class RegisterDto {
     @ApiProperty({ description: 'First name of the user', type: String })
@@ -29,5 +30,13 @@ export class UserResponseDto {
     phone: string;
     firstName: string;
     lastName: string;
+    roles: RoleResponseDto[];
     email?: string;
+    isSuperAdmin?: Boolean;
+}
+
+class RoleResponseDto {
+    organization: string;
+    role: string;
+    invitationStatus?: InvitationStatus;
 }

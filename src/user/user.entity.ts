@@ -14,9 +14,9 @@ export class User {
     phone: string;
     @Prop({ required: true })
     password: string;
-    @Prop({ required: true, unique: true })
-    email: string;
-    @Prop({type: Role, default: []})
+    @Prop({ required: false, unique: true })
+    email?: string;
+    @Prop({type: [Role], default: []})
     roles?: Role[];
     @Prop()
     isSuperAdmin?: Boolean;

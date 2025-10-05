@@ -7,6 +7,8 @@ import { AuthenticationServiceHelper } from "./authentication.service.helper";
 import { JwtService } from "@nestjs/jwt";
 import { JwtConfig } from "src/config/jwt.config";
 import { Algorithm } from 'jsonwebtoken';
+import { RegisterDto } from "src/user/user.dto";
+import { SUPER_ADMIN_SECRET_KEY } from "src/config/system.config";
 
 
 export class AuthenticationService {
@@ -44,5 +46,21 @@ export class AuthenticationService {
             },
         );
         return AuthenticationServiceHelper.createLoginResponse(user, token);
+    }
+
+    async createSuperAdmin(secretKey: string, registerDto: RegisterDto) {
+        if ( secretKey != SUPER_ADMIN_SECRET_KEY) {
+            throw new BadRequestException('Invalid secret key provided.');
+        }
+
+        await this._userRepository.create({
+            phone: registerDto.phone,
+            password: AuthenticationServiceHelper.hash(registerDto.password),
+            firstName: registerDto.firstName,
+            lastName: registerDto.lastName,
+            email: registerDto.email,
+            isSuperAdmin: true,
+        })
+
     }
 }
