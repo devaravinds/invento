@@ -15,20 +15,20 @@ export class InventoryItemController {
 
     @Patch(':id/:quantity')
     @ApiOperation({ summary: 'Update available quantity of an InventoryItem' })
-    async updateAvailableQuantity(@Param('id') id: string, @Param('quantity') quantity: number) {
+    async updateAvailableQuantity(@Param('id') id: number, @Param('quantity') quantity: number) {
         return await this._inventoryItemService.updateAvailableQuantity(id, quantity);
     }
 
     @Get(':outletId')
     @ApiOperation({ summary: 'Get all inventory items for an outlet' })
-    async getInventoryItemsByOutlet(@Param('outletId') outletId: string) {
+    async getInventoryItemsByOutlet(@Param('outletId') outletId: number) {
         const inventoryItems = await this._inventoryItemService.getInventoryItemsByOutlet(outletId);
         return { status: 200, message: 'Inventory items retrieved successfully', data: inventoryItems };
     }
 
     @Get(':productId/:outletId')
     @ApiOperation({ summary: 'Get inventory item by product and outlet' })
-    async getInventoryItemByProductAndOutlet(@Param('productId') productId: string, @Param('outletId') outletId: string) {
+    async getInventoryItemByProductAndOutlet(@Param('productId') productId: number, @Param('outletId') outletId: number) {
         const inventoryItem = await this._inventoryItemService.getIventoryItemByOutletAndProduct(productId, outletId);
         return { status: 200, message: 'Inventory item retrieved successfully', data: inventoryItem };
     }

@@ -24,7 +24,7 @@ export class OrganizationController {
   @Put(':id')
   @ApiOperation({ summary: 'Update Organization Details' })
   @Roles(UserRoles.ADMIN, UserRoles.SUPER_ADMIN)
-  async updateOrganization(@Body() addOrganizationDto: AddOrganizationDto, @Param('id') id: string) {
+  async updateOrganization(@Body() addOrganizationDto: AddOrganizationDto, @Param('id') id: number) {
     await this._organizationService.updateOrganization(id, addOrganizationDto);
     return {status: HttpStatus.OK, message: 'Organization Updated Successfully', id: id}
   }

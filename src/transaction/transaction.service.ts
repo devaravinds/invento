@@ -1,20 +1,20 @@
-import { Model } from "mongoose";
 import { AddTransactionDto } from "./transaction.dto";
-import { Transaction, TransactionDocument } from "./transaction.entity";
+import { Transaction } from "./transaction.entity";
 import { BaseService } from "src/base/base.service";
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
 import { ProductService } from "src/product/product.service";
 import { OutletService } from "src/outlet/outlet.service";
 import { OrganizationService } from "src/organization/organization.service";
 import { TransactionStatus } from "./transaction.enum";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 
 @Injectable()
-export class TransactionService extends BaseService<TransactionDocument> {
+export class TransactionService extends BaseService<Transaction> {
 
     constructor(
-        @InjectModel(Transaction.name)
-        private readonly _transactionRepository: Model<TransactionDocument>,
+        @InjectRepository(Transaction)
+        private readonly _transactionRepository: Repository<Transaction>,
         private readonly _productService: ProductService,
         private readonly _outletService: OutletService,
         private readonly _organizationService: OrganizationService
@@ -22,16 +22,16 @@ export class TransactionService extends BaseService<TransactionDocument> {
         super(_transactionRepository);
     }
 
-    async addTransaction(organizationId: string, addTransactionDto: AddTransactionDto) {
+    async addTransaction(organizationId: number, addTransactionDto: AddTransactionDto) {
         const { productId, outletId, partnerId, rate, count, transactionType } = addTransactionDto;
         
         const productExists = await this._productService.getById(productId);
-        if (!productExists || productExists.organizationId !== organizationId) {
+        if (!productExists || productExists.organization.id !== organizationId) {
             throw new BadRequestException(`Product with ID ${productId} does not exist.`);
         }
 
         const outletExists = await this._outletService.getById(outletId);
-        if (!outletExists || outletExists.organizationId !== organizationId) {
+        if (!outletExists || outletExists.organization.id !== organizationId) {
             throw new BadRequestException(`Outlet with ID ${outletId} does not exist.`);
         }
 
@@ -40,14 +40,14 @@ export class TransactionService extends BaseService<TransactionDocument> {
             throw new BadRequestException(`Organization with ID ${organizationId} does not exist.`);
         }
 
-        const newTransaction: Transaction = {
-            productId,
-            outletId,
-            partnerId,
-            rate,
-            count,
-            transactionType,
-            transactionStatus: TransactionStatus.PENDING
-        } 
+        // const newTransaction: Transaction = {
+        //     productId,
+        //     outletId,
+        //     partnerId,
+        //     rate,
+        //     count,
+        //     transactionType,
+        //     transactionStatus: TransactionStatus.PENDING
+        // } 
     }
 }

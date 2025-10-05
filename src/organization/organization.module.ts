@@ -1,15 +1,13 @@
 import { Module } from '@nestjs/common';
 import { OrganizationController } from './organization.controller';
 import { OrganizationService } from './organization.service';
-import { MongooseModule } from '@nestjs/mongoose';
-import { OrganizationSchema } from './organization.entity';
 import { JwtService } from '@nestjs/jwt';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Organization } from './organization.entity';
 
 @Module({
   imports:[
-    MongooseModule.forFeature([
-      { name: 'Organization', schema: OrganizationSchema }
-    ])
+    TypeOrmModule.forFeature([Organization])
   ],
   controllers: [OrganizationController],
   providers: [OrganizationService, JwtService],

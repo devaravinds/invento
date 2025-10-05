@@ -1,49 +1,48 @@
-import { Model } from "mongoose";
 import { AddPartnerDto } from "./partner.dto";
-import { Partner, PartnerDocument } from "./partner.entity";
+import { Partner } from "./partner.entity";
 import { BaseService } from "src/base/base.service";
-import { Inject, InternalServerErrorException, NotFoundException } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
+import { InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 
-export class PartnerService extends BaseService<PartnerDocument> {
+export class PartnerService extends BaseService<Partner> {
     constructor(
-      @InjectModel(Partner.name)
-      private readonly _partnerRepository: Model<PartnerDocument>
+      @InjectRepository(Partner)
+      private readonly _partnerRepository: Repository<Partner>
     ) {
         super(_partnerRepository);
     }
     
-    async addPartner(organizationId: string, addPartnerDto: AddPartnerDto): Promise<string> {
+    async addPartner(organizationId: number, addPartnerDto: AddPartnerDto): Promise<number> {
         const partner = new Partner();
         partner.name = addPartnerDto.name;
         partner.phone = addPartnerDto.phone;
-        partner.organizationId = organizationId;
+        partner.organization.id = organizationId;
         try {
           const createdPartner =  await this._partnerRepository.create(partner);
-          return createdPartner._id.toString();
+          return createdPartner.id;
         }
         catch (error) {
             throw new InternalServerErrorException(`Error adding partner: ${error.message}`);
         }
     }
     
-    async updatePartner(organizationId: string, id: string, addPartnerDto: AddPartnerDto): Promise<string> {
+    async updatePartner(organizationId: number, id: string, addPartnerDto: AddPartnerDto): Promise<string> {
       try {
         const partnerExists = await this.getById(id);
-        if (!partnerExists || partnerExists.organizationId !== organizationId) {
+        if (!partnerExists || partnerExists.organization.id !== organizationId) {
           throw new NotFoundException('Partner not found for the curret organization');
         }
       } catch (error) {
         throw new InternalServerErrorException(`Error checking partner existence: ${error.message}`);
       }
       try {
-        const partnerToUpdate: Partner = {
+        const updatedPartner = await this._partnerRepository.update(id, {
           name: addPartnerDto.name,
           phone: addPartnerDto.phone,
-          organizationId: organizationId
-        } 
-        const updatedPartner = await this._partnerRepository.findByIdAndUpdate(id, partnerToUpdate);
-        return updatedPartner._id.toString();
+          organization: { id: organizationId }
+        });
+        return updatedPartner.raw.id;
       }
       catch (error) {
         throw new InternalServerErrorException(`Error updating partner: ${error.message}`);

@@ -1,18 +1,21 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from 'mongoose';
+import { Base } from "src/base/base.entity";
+import { InventoryItem } from "src/inventory-item/inventory-item.entity";
+import { Organization } from "src/organization/organization.entity";
+import { Transaction } from "src/transaction/transaction.entity";
+import { Column, Entity, ManyToOne } from "typeorm";
 
-export type OutletDocument = Outlet & Document;
-
-@Schema({collection: 'outlet'})
-export class Outlet {
-    @Prop({ required: true })
+@Entity('outlet')
+export class Outlet extends Base {
+    @Column()
     name: string;
-    @Prop({ required: true, unique: true })
+    @Column()
     phone: string;
-    @Prop({ required: true })
+    @Column()
     address: string;
-    @Prop({ type: String, ref: 'Organization', required: true })
-    organizationId: string; 
+    @ManyToOne(() => Organization, organization => organization.outlets)
+    organization: Organization; 
+    @ManyToOne(() => Transaction, transaction => transaction.outlet, { cascade: true })
+    transactions: Transaction[];
+    @ManyToOne(() => InventoryItem, inventoryItem => inventoryItem.outlet, { cascade: true})
+    inventoryItems: InventoryItem[];
 }
-
-export const OutletSchema = SchemaFactory.createForClass(Outlet);

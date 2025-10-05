@@ -1,16 +1,16 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
+import { Base } from "src/base/base.entity";
+import { InventoryItem } from "src/inventory-item/inventory-item.entity";
+import { Organization } from "src/organization/organization.entity";
+import { Column, Entity, ManyToMany, ManyToOne, OneToMany } from "typeorm";
 
-export type ProductDocument = Product & Document;
-
-@Schema({collection: 'product'})
-export class Product {
-    @Prop({ required: true })
+@Entity('product')
+export class Product extends Base {
+    @Column()
     name: string;
-    @Prop({ required: true })
+    @Column()
     description: string;
-    @Prop({ required: true })
-    organizationId: string;
+    @OneToMany(() => InventoryItem, inventoryItem => inventoryItem.product, { cascade: true })
+    inventoryItem: InventoryItem;
+    @ManyToOne(() => Organization, organization => organization.products, { eager: true })
+    organization: Organization;
 }
-
-export const ProductSchema = SchemaFactory.createForClass(Product);

@@ -1,16 +1,20 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
+import { Base } from "src/base/base.entity";
+import { Organization } from "src/organization/organization.entity";
+import { Transaction } from "src/transaction/transaction.entity";
+import { Entity, Column, ManyToMany, OneToMany, ManyToOne } from "typeorm";
 
-export type PartnerDocument = Partner & Document;
+@Entity('partner')
+export class Partner extends Base {
 
-@Schema({ collection: 'partner' })
-export class Partner {
-    @Prop({ required: true })
-    name: string;
-    @Prop({ required: true, unique: true })
-    phone: string;
-    @Prop({ required: true })
-    organizationId: string;
+  @Column({ nullable: false })
+  name: string;
+
+  @Column({ unique: true, nullable: false })
+  phone: string;
+
+  @ManyToOne(() => Organization, organization => organization.partners)
+  organization: Organization;
+  
+  @OneToMany(() => Transaction, transaction => transaction.partner, { cascade: true })
+  transactions: Transaction[];
 }
-
-export const PartnerSchema = SchemaFactory.createForClass(Partner);

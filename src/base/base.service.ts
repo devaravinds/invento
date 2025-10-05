@@ -1,12 +1,13 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { Model, Document } from 'mongoose';
+import { Repository } from 'typeorm';
+import { Base } from './base.entity';
 
-export class BaseService<T extends Document> {
-  constructor(protected readonly model: Model<T>) {}
+export class BaseService<T extends Base> {
+  constructor(protected readonly repository: Repository<T>) {}
 
-  async checkExists(id: string): Promise<boolean> {
+  async checkExists(id: number): Promise<boolean> {
     try {
-      return (await this.model.exists({ _id: id })) ? true : false;
+      return await this.repository.exists({ where: { id } as any });
     } catch (error) {
       throw new InternalServerErrorException(`Error checking existence: ${error.message}`);
     }
@@ -14,7 +15,7 @@ export class BaseService<T extends Document> {
 
   async getById(id: string): Promise<T> {
     try {
-      const document = await this.model.findById(id);
+      const document = await this.repository.findOne({ where : { id } as any});
       if (!document) {
         return undefined;
       }

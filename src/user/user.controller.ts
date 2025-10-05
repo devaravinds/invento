@@ -1,4 +1,4 @@
-import { Body, Controller, Header, HttpStatus, Param, Patch, Post, Put, Query, Req, Request, UseGuards } from "@nestjs/common";
+import { Body, Controller, HttpStatus, Param, Patch, Post, Put, Query, Request, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeader, ApiOperation, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { AuthGuard } from "src/authentication/authentication.guard";
 import { UserService } from "./user.service";
@@ -28,7 +28,7 @@ export class UserController {
     @Put(':id')
     @ApiOperation({ summary: 'Update user details' })
     @Roles(UserRoles.ADMIN, UserRoles.SUPER_ADMIN)
-    async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    async updateUser(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
         await this._userService.updateUser(id, updateUserDto)
         return { 
             status: HttpStatus.OK, 

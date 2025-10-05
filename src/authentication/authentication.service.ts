@@ -1,26 +1,28 @@
-import { InjectModel } from "@nestjs/mongoose";
 import { LoginDto, LoginResponse } from "./authentication.dto";
 import { User } from "src/user/user.entity";
-import { Model } from "mongoose";
 import { BadRequestException } from "@nestjs/common";
 import { AuthenticationServiceHelper } from "./authentication.service.helper";
 import { JwtService } from "@nestjs/jwt";
 import { JwtConfig } from "src/config/jwt.config";
 import { Algorithm } from 'jsonwebtoken';
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { RegisterDto } from "src/user/user.dto";
+import { SUPER_ADMIN_SECRET_KEY } from "src/config/system.config";
 
 
 export class AuthenticationService {
     constructor(
-        @InjectModel(User.name)
-        private readonly _userRepository: Model<User>,
-        private readonly _jwtService: JwtService
+        @InjectRepository(User)
+        private readonly _userRepository: Repository<User>,
+        private readonly _jwtService: JwtService,
 
     ) {}
 
     async login(loginDto: LoginDto): Promise<LoginResponse> {
         
         const { phone, password } = loginDto;
-        const user = await this._userRepository.findOne({ phone: phone });
+        const user = await this._userRepository.findOne({where: { phone }});
         if (!user) {
             throw new BadRequestException('User not found with the provided phone number.');
         }
@@ -44,5 +46,21 @@ export class AuthenticationService {
             },
         );
         return AuthenticationServiceHelper.createLoginResponse(user, token);
+    }
+
+    async createSuperAdmin(secretKey: string, registerDto: RegisterDto) {
+        if ( secretKey != SUPER_ADMIN_SECRET_KEY) {
+            throw new BadRequestException('Invalid secret key provided.');
+        }
+
+        await this._userRepository.save({
+            phone: registerDto.phone,
+            password: AuthenticationServiceHelper.hash(registerDto.password),
+            firstName: registerDto.firstName,
+            lastName: registerDto.lastName,
+            email: registerDto.email,
+            isSuperAdmin: true,
+        })
+
     }
 }

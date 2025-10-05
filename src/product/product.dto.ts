@@ -9,7 +9,7 @@ export class AddProductDto {
 
 export class ProductResponseDto {
     @ApiProperty()
-    id: string;
+    id: number;
 
     @ApiProperty()
     name: string;

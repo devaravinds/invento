@@ -1,25 +1,21 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Base } from "src/base/base.entity";
 import { Role } from "./role.entity";
-import { Document } from "mongoose";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
-export type UserDocument = User & Document;
-
-@Schema({collection: 'user'})
-export class User {
-    @Prop({ required: true })
+@Entity('user')
+export class User extends Base {
+    @Column()
     firstName: string;
-    @Prop({ required: true })
+    @Column()
     lastName: string;
-    @Prop({ required: true, unique: true })
+    @Column({unique: true})
     phone: string;
-    @Prop({ required: true })
+    @Column()
     password: string;
-    @Prop({ required: true, unique: true })
+    @Column({unique: true})
     email: string;
-    @Prop({type: Role, default: []})
-    roles?: Role[];
-    @Prop()
+    @Column({ default: false })
     isSuperAdmin?: Boolean;
+    @OneToMany(() => Role, role => role.user, { cascade: true })
+    roles: Role[];
 }
-
-export const UserSchema = SchemaFactory.createForClass(User);

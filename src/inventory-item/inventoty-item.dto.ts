@@ -4,14 +4,14 @@ export class AddInventoryItemDto {
     @ApiProperty()
     quantity: number;
     @ApiProperty()
-    productId: string;
+    productId: number;
     @ApiProperty()
-    outletId: string;
+    outletId: number;
 }
 
 export class InventoryItemResponseDto {
     @ApiProperty()
-    productId: string;
+    productId: number;
 
     @ApiProperty()
     name: string;

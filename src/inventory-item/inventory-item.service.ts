@@ -1,20 +1,20 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { AddInventoryItemDto, InventoryItemResponseDto } from './inventoty-item.dto';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { InventoryItem, InventoryItemDocument } from './inventory-item.entity';
+import { InventoryItem } from './inventory-item.entity';
 import { ProductService } from 'src/product/product.service';
 import { OutletService } from 'src/outlet/outlet.service';
 import { BaseService } from 'src/base/base.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
-export class InventoryItemService extends BaseService<InventoryItemDocument> {
+export class InventoryItemService extends BaseService<InventoryItem> {
     constructor(
-        @InjectModel(InventoryItem.name)
-        private readonly _inventoryItemRepository: Model<InventoryItemDocument>,
-        private readonly _productService: ProductService ,
+        @InjectRepository(InventoryItem)
+        private readonly _inventoryItemRepository: Repository<InventoryItem>,
+        private readonly _productService: ProductService,
         private readonly _outletService: OutletService
-        
+
     ) {
         super(_inventoryItemRepository);
     }
@@ -29,48 +29,53 @@ export class InventoryItemService extends BaseService<InventoryItemDocument> {
         if (!outletExists) {
             throw new BadRequestException(`Outlet with ID ${outletId} does not exist.`);
         }
-        const existingInventoryItem = await this._inventoryItemRepository.exists({ productId: productId, outletId: outletId });
+        const productOutletQuery = {
+            product: { id: productId },
+            outlet: { id: outletId }
+        }
+        const existingInventoryItem = await this._inventoryItemRepository.exists({
+            where: productOutletQuery
+        });
         if (existingInventoryItem) {
             try {
-                const updatedInventoryItem = await this._inventoryItemRepository.updateOne({ productId, outletId }, { $inc: { quantity: addInventoryItem.quantity } });
-                return { status: 200, message: 'Inventory item updated successfully', id: updatedInventoryItem.upsertedId };
+                const updatedInventoryItem = await this._inventoryItemRepository.increment(productOutletQuery, 'quantity', addInventoryItem.quantity);
+                return { status: 200, message: 'Inventory item updated successfully', id: updatedInventoryItem.raw.id };
             }
             catch (error) {
                 throw new InternalServerErrorException(`Error updating inventory item: ${error.message}`);
             }
         }
-        const newInventoryItem = new this._inventoryItemRepository(addInventoryItem);
         try {
-            const createdInventoryItem = await newInventoryItem.save();
-            return { status: 201, message: 'Inventory item created successfully', id: createdInventoryItem._id };
+            const createdInventoryItem = await this._inventoryItemRepository.save(addInventoryItem)
+            return { status: 201, message: 'Inventory item created successfully', id: createdInventoryItem.id };
         } catch (error) {
             throw new InternalServerErrorException(`Error creating inventory item: ${error.message}`);
         }
     }
 
-    async updateAvailableQuantity(id: string, quantity: number) {
+    async updateAvailableQuantity(id: number, quantity: number) {
         try {
-            const updatedInventoryItem = await this._inventoryItemRepository.findByIdAndUpdate(id, { quantity: quantity });
+            const updatedInventoryItem = await this._inventoryItemRepository.update(id, { quantity });
             if (!updatedInventoryItem) {
                 throw new BadRequestException(`Inventory item with ID ${id} does not exist.`);
             }
-            return { status: 200, message: 'Inventory item quantity updated successfully', id: updatedInventoryItem._id };
+            return { status: 200, message: 'Inventory item quantity updated successfully', id: updatedInventoryItem.raw.id };
         } catch (error) {
             throw new InternalServerErrorException(`Error updating inventory item quantity: ${error.message}`);
         }
     }
 
-    async getInventoryItemsByOutlet(outletId: string): Promise<InventoryItemResponseDto[]> {
+    async getInventoryItemsByOutlet(outletId: number): Promise<InventoryItemResponseDto[]> {
         try {
-            const inventoryItems = await this._inventoryItemRepository.find({ outletId });
+            const inventoryItems = await this._inventoryItemRepository.find({ where: { outlet: { id: outletId } }, relations: ['product'] });
             if (!inventoryItems || inventoryItems.length === 0) {
                 throw new BadRequestException(`No inventory items found for outlet ID ${outletId}.`);
             }
-            const productIds = inventoryItems.map(item => item.productId);
+            const productIds = inventoryItems.map(item => item.product.id);
             try {
-                const products = await this._productService.getProductsByIds(productIds);
+                const products = inventoryItems.map(item => item.product);
                 const inventoryItemsWithProductInfo: InventoryItemResponseDto[] = inventoryItems.map(item => {
-                const product = products.find(product => product.id === item.productId.toString());
+                    const product = products.find(product => product.id === item.product.id);
                     return {
                         productId: product.id,
                         name: product.name,
@@ -88,9 +93,13 @@ export class InventoryItemService extends BaseService<InventoryItemDocument> {
         }
     }
 
-    async getIventoryItemByOutletAndProduct(productId: string, outletId: string): Promise<InventoryItemResponseDto> {
+    async getIventoryItemByOutletAndProduct(productId: number, outletId: number): Promise<InventoryItemResponseDto> {
+        const productOutletQuery = {
+            product: { id: productId },
+            outlet: { id: outletId }
+        }
         try {
-            const inventoryItem = await this._inventoryItemRepository.findOne({ outletId, productId });
+            const inventoryItem = await this._inventoryItemRepository.findOne({where: productOutletQuery});
             if (!inventoryItem) {
                 throw new BadRequestException(`Inventory item with product ID ${productId} does not exist for outlet ID ${outletId}.`);
             }
@@ -104,7 +113,7 @@ export class InventoryItemService extends BaseService<InventoryItemDocument> {
                 };
                 return inventoryItemWithProductInfo;
             }
-            catch(error) {
+            catch (error) {
                 throw new InternalServerErrorException(`Error retrieving product for product ID ${productId}: ${error.message}`);
             }
         }

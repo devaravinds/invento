@@ -1,15 +1,20 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Base } from "src/base/base.entity";
 import { InvitationStatus, UserRoles } from "./user.enum";
+import { Column, Entity, ManyToOne } from "typeorm";
+import { User } from "./user.entity";
+import { Organization } from "src/organization/organization.entity";
 
-@Schema({ _id: false })
-export class Role {
-    @Prop({ required: true })
+@Entity('role')
+export class Role extends Base {
+    @Column()
     role: UserRoles;
 
-    @Prop({ required: true })
-    organizationId: string;
+    @ManyToOne(() => Organization, (org) => org.roles, { onDelete: 'CASCADE' })
+    organization: Organization;
 
-    @Prop({ enum: InvitationStatus })
-    invitationStatus?: InvitationStatus
+    @Column({ enum: InvitationStatus })
+    invitationStatus: InvitationStatus
+
+    @ManyToOne(() => User, (user) => user.roles, { onDelete: 'CASCADE' })
+    user: User;
 }
-export const RoleSchema = SchemaFactory.createForClass(Role);

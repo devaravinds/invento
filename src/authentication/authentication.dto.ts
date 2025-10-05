@@ -14,7 +14,7 @@ export class LoginResponse {
 }
 
 class User {
-    id: string;
+    id: number;
     phone: string;
     name: string;
     email: string;
@@ -22,6 +22,11 @@ class User {
 }
 
 class Role {
-    organizationId: string;
+    organization: Organization;
     role: UserRoles;
+}
+
+class Organization {
+    id: number;
+    name: string;
 }

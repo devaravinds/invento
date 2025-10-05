@@ -1,25 +1,31 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
 import { TransactionStatus, TransactionType } from "./transaction.enum";
-import { Document } from "mongoose";
+import { Partner } from "src/person/partner.entity";
+import { Outlet } from "src/outlet/outlet.entity";
 
-export type TransactionDocument = Transaction & Document;
-
-@Schema({collection: 'transaction'})
+@Entity('transaction')
 export class Transaction {
-    @Prop({ required: true })
-    rate: number;
-    @Prop({ required: true })
-    productId: string;
-    @Prop({ required: true })
-    partnerId: string;
-    @Prop({ required: true })
-    outletId: string;
-    @Prop({ required: true })
-    count: number;    
-    @Prop({ required: true, enum: TransactionStatus })
-    transactionStatus: TransactionStatus
-    @Prop({ required: true, enum: TransactionType })
-    transactionType: TransactionType;
-}
+  @PrimaryGeneratedColumn()
+  id: number;
 
-export const TransactionSchema = SchemaFactory.createForClass(Transaction);
+  @Column({ type: 'float', nullable: false })
+  rate: number;
+
+  @Column({ type: 'varchar', nullable: false })
+  productId: string;
+
+  @ManyToOne(() => Partner, partner => partner.transactions)
+  partner: Partner;
+
+  @ManyToOne(() => Outlet, outlet => outlet.transactions)
+  outlet: Outlet;
+
+  @Column({ type: 'int', nullable: false })
+  count: number;
+
+  @Column({ type: 'enum', enum: TransactionStatus, nullable: false })
+  transactionStatus: TransactionStatus;
+
+  @Column({ type: 'enum', enum: TransactionType, nullable: false })
+  transactionType: TransactionType;
+}
