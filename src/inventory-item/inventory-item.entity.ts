@@ -9,8 +9,16 @@ export class InventoryItem {
     productId: String;
     @Prop({ required: true })
     outletId: String;
-    @Prop()
-    quantity: number;
+    @Prop({ required: false, default: [] , type: Array})
+    quantities: Quantity[];
+}
+
+@Schema({_id: false})
+class Quantity {
+    @Prop({ required: true })
+    count: number;
+    @Prop({ required: true })
+    unit: string;
 }
 
 export const InventoryItemSchema = SchemaFactory.createForClass(InventoryItem);

@@ -20,7 +20,7 @@ export class InventoryItemService extends BaseService<InventoryItemDocument> {
     }
 
     async addInventoryItem(addInventoryItem: AddInventoryItemDto) {
-        const { productId, outletId } = addInventoryItem;
+        const { productId, outletId, quantities } = addInventoryItem;
         const productExists = await this._productService.checkExists(productId);
         const outletExists = await this._outletService.checkExists(outletId);
         if (!productExists) {
@@ -29,10 +29,17 @@ export class InventoryItemService extends BaseService<InventoryItemDocument> {
         if (!outletExists) {
             throw new BadRequestException(`Outlet with ID ${outletId} does not exist.`);
         }
-        const existingInventoryItem = await this._inventoryItemRepository.exists({ productId: productId, outletId: outletId });
+        const existingInventoryItem = await this._inventoryItemRepository.findOne({ productId: productId, outletId: outletId });
         if (existingInventoryItem) {
             try {
-                const updatedInventoryItem = await this._inventoryItemRepository.updateOne({ productId, outletId }, { $inc: { quantity: addInventoryItem.quantity } });
+                const existingQuantities = existingInventoryItem.quantities;
+                quantities.forEach(newQty => {
+                    const existingQty = existingQuantities.find(qty => qty.unit === newQty.unit);
+                    if (existingQty) {
+                        newQty.count += existingQty.count;
+                    }
+                })
+                const updatedInventoryItem = await this._inventoryItemRepository.updateOne({ productId, outletId }, { $set: { quantities: quantities } });
                 return { status: 200, message: 'Inventory item updated successfully', id: updatedInventoryItem.upsertedId };
             }
             catch (error) {
@@ -74,7 +81,7 @@ export class InventoryItemService extends BaseService<InventoryItemDocument> {
                     return {
                         productId: product.id,
                         name: product.name,
-                        quantityAvailable: item.quantity
+                        quantityAvailable: item.quantities
                     };
                 });
                 return inventoryItemsWithProductInfo;
@@ -99,7 +106,7 @@ export class InventoryItemService extends BaseService<InventoryItemDocument> {
                 const inventoryItemWithProductInfo: InventoryItemResponseDto = {
                     productId: product.id,
                     name: product.name,
-                    quantityAvailable: inventoryItem.quantity,
+                    quantityAvailable: inventoryItem.quantities,
                     description: product.description
                 };
                 return inventoryItemWithProductInfo;

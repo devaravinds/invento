@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UnitService } from './unit.service';
 import { AddUnitDto } from './unit.dto';
@@ -16,6 +16,29 @@ export class UnitController {
     @ApiOperation({ summary: 'Add a new Unit' })
     async addUnit(@Request() apiRequest, @Body() addUnitDto: AddUnitDto) {
         const organizationId = apiRequest.organizationId;
-        return await this._unitService.addUnit(organizationId, addUnitDto);
+        const createdUnitId =  await this._unitService.addUnit(organizationId, addUnitDto);
+        return { status: 201, message: 'Unit created successfully', id: createdUnitId };
+    }
+
+    @Get()
+    @ApiOperation({ summary: 'Get all Units for an organization' })
+    async getUnits(@Request() apiRequest) {
+        const organizationId = apiRequest.organizationId;
+        return this._unitService.getUnitsByOrganization(organizationId);
+    }
+
+    @Put(':id')
+    @ApiOperation({ summary: 'Update a unit by id' })
+    async updateUnit(@Request() apiRequest, @Body() updateUnitDto: AddUnitDto, @Param('id') id: string) {
+        const organizationId = apiRequest.organizationIdl;
+        await this._unitService.updateById(organizationId, id, updateUnitDto);
+        return { status: 200, message: 'Unit updated successfully' };
+    }
+
+    @Delete()
+    @ApiOperation({ summary: 'Delete a Unit by ID' })
+    async deleteUnit(@Body('id') id: string) {
+        await this._unitService.deleteById(id);
+        return { status: 200, message: 'Unit deleted successfully' };
     }
 }

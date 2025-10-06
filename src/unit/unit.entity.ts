@@ -16,6 +16,9 @@ export class Unit {
 
   @Prop({ type: String, ref: 'Unit', required: false })
   parent?: string; 
+
+  @Prop({ type: String, required: true })
+  organizationId: string;
 }
 
 export const UnitSchema = SchemaFactory.createForClass(Unit);
