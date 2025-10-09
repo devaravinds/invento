@@ -3,7 +3,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OutletService } from './outlet.service';
 import { AddOutletDto, OutletResponseDto } from './outlet.dto';
 
-@Controller('outlet')
+@Controller('outlets')
 @ApiTags('Outlet APIs')
 export class OutletController {
     constructor(private readonly _outletService: OutletService) {}

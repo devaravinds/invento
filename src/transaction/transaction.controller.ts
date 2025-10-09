@@ -4,7 +4,7 @@ import { AuthGuard } from "src/authentication/authentication.guard";
 import { TransactionService } from "./transaction.service";
 import { AddTransactionDto } from "./transaction.dto";
 
-@Controller('transaction')
+@Controller('transactions')
 @ApiTags('Transaction APIs')
 @ApiHeader({ name: 'organization-id', required: true, description: 'Organization ID' })
 @UseGuards(AuthGuard)

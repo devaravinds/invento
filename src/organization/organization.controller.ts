@@ -6,7 +6,7 @@ import { AuthGuard } from 'src/authentication/authentication.guard';
 import { OrganizationIdExempted, Roles } from 'src/authentication/authentication.decorator';
 import { UserRoles } from 'src/user/user.enum';
 
-@Controller('organization')
+@Controller('organizations')
 @ApiTags('Organization APIs')
 @ApiBearerAuth('bearer')
 @UseGuards(AuthGuard)

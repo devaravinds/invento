@@ -3,7 +3,7 @@ import { InventoryItemService } from './inventory-item.service';
 import { AddInventoryItemDto } from './inventoty-item.dto';
 import { ApiOperation } from '@nestjs/swagger';
 
-@Controller('inventory-item')
+@Controller('inventory-items')
 export class InventoryItemController {
     constructor(private readonly _inventoryItemService: InventoryItemService) {}
     

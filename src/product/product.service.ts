@@ -57,4 +57,17 @@ export class ProductService extends BaseService<ProductDocument> {
             throw new InternalServerErrorException(`Error retrieving products. Error: ${error.message}`);
         }
     }
+
+    async getProductsByOrganization(organizationId: string): Promise<ProductResponseDto[]> {
+        try {
+            const products = await this._productRepository.find({ organizationId });
+            return products.map(product => ({
+                id: product._id.toString(),
+                name: product.name,
+                description: product.description
+            }));
+        } catch (error) {
+            throw new InternalServerErrorException(`Error retrieving products. Error: ${error.message}`);
+        }
+    }
 }

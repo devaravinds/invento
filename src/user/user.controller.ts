@@ -6,7 +6,7 @@ import { RegisterDto, UpdateUserDto } from "./user.dto";
 import { OrganizationIdExempted, Roles } from "src/authentication/authentication.decorator";
 import { InvitationStatus, UserRoles } from "./user.enum";
 
-@Controller('user')
+@Controller('users')
 @ApiTags('User APIs')
 @ApiBearerAuth('bearer')
 @UseGuards(AuthGuard)

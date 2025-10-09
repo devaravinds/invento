@@ -6,7 +6,7 @@ import { UserRoles } from 'src/user/user.enum';
 import { PartnerService } from './partner.service';
 import { AddPartnerDto } from './partner.dto';
 
-@Controller('partner')
+@Controller('partners')
 @ApiTags('Partner APIs')
 @ApiHeader({ name: 'organization-id', required: true, description: 'Organization ID' })
 @ApiBearerAuth('bearer')

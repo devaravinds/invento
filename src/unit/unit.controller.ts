@@ -4,7 +4,7 @@ import { UnitService } from './unit.service';
 import { AddUnitDto } from './unit.dto';
 import { AuthGuard } from 'src/authentication/authentication.guard';
 
-@Controller('unit')
+@Controller('units')
 @ApiTags('Unit APIs')
 @ApiHeader({ name: 'organization-id', required: true, description: 'Organization ID' })
 @UseGuards(AuthGuard)
