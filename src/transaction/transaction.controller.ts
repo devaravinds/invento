@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Request, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, Request, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeader, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AuthGuard } from "src/authentication/authentication.guard";
 import { TransactionService } from "./transaction.service";
@@ -22,5 +22,17 @@ export class TransactionController {
             message: 'Transaction Added Successfully',
             id: transactionId
         };
+    }
+
+    @Get()
+    @ApiOperation({ summary: 'Get all transactions by Organization' })
+    async getAllTransactionsByOrganization(@Request() apiRequest) {
+        const organizationId = apiRequest.organizationId;
+        const transactions = await this._transactionService.getTransactionsByOrganization(organizationId);
+        return {
+            status: 200,
+            data: transactions,
+            message: 'Transactions fetched successfully'
+        }
     }
 }

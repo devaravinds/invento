@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 export type OutletDocument = Outlet & Document;
 
-@Schema({collection: 'outlet'})
+@Schema({collection: 'outlet', timestamps: true})
 export class Outlet {
     @Prop({ required: true })
     name: string;

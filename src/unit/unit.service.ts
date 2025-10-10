@@ -82,7 +82,7 @@ export class UnitService extends BaseService<UnitDocument> {
             throw new BadRequestException('Unit not found');
         }
         const existingUnitIds = await this.findUnitsWithSameNameOrSymbol(organizationId, name, symbol)
-        if(existingUnitIds.length || existingUnitIds[0] !== id) {
+        if(existingUnitIds.some(unitId => unitId !== id)) {
             throw new BadRequestException('A unit with the same name or symbol already exists in this organization.');
         }
         if(addUnitDto.parent) {
@@ -99,5 +99,22 @@ export class UnitService extends BaseService<UnitDocument> {
                 parent: addUnitDto.parent
             }
         });
+    }
+
+    async isTopLevelUnit(unitId: string) {
+        const unit = await this.getUnitById(unitId);
+        return unit && !unit.parent;
+    }
+
+    async getParentTree(unit: string) {
+        const tree: UnitResponseDto[] = [];
+        let currentUnit: UnitResponseDto;
+        do {
+            currentUnit = await this.getUnitById(unit);
+            tree.push(currentUnit);
+            unit = currentUnit.parent;
+        } while (currentUnit?.parent);
+
+        return tree;
     }
 }

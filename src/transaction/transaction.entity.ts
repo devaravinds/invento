@@ -1,10 +1,11 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { TransactionStatus, TransactionType } from "./transaction.enum";
 import { Document } from "mongoose";
+import { Quantity } from "src/inventory-item/inventory-item.entity";
 
 export type TransactionDocument = Transaction & Document;
 
-@Schema({collection: 'transaction'})
+@Schema({collection: 'transaction', timestamps: true})
 export class Transaction {
     @Prop({ required: true })
     rate: number;
@@ -15,11 +16,18 @@ export class Transaction {
     @Prop({ required: true })
     outletId: string;
     @Prop({ required: true })
-    count: number;    
+    quantity: Quantity;    
     @Prop({ required: true, enum: TransactionStatus })
     transactionStatus: TransactionStatus
     @Prop({ required: true, enum: TransactionType })
     transactionType: TransactionType;
+    @Prop()
+    amount?: number;
 }
 
 export const TransactionSchema = SchemaFactory.createForClass(Transaction);
+
+TransactionSchema.pre<Transaction>('save', function (next) {
+  this.amount = this.rate * this.quantity.count;
+  next();
+});

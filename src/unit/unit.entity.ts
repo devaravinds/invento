@@ -11,8 +11,8 @@ export class Unit {
   @Prop({ required: true, unique: true })
   symbol: string;
 
-  @Prop({ type: Number, required: false, default: 1 })
-  conversionFactor: number; 
+  @Prop({ type: Number, required: false })
+  conversionFactor?: number; 
 
   @Prop({ type: String, ref: 'Unit', required: false })
   parent?: string; 

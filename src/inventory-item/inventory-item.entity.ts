@@ -3,7 +3,7 @@ import { Document } from "mongoose";
 
 export type InventoryItemDocument = InventoryItem & Document;
 
-@Schema({collection: 'inventory_item'})
+@Schema({collection: 'inventory_item', timestamps: true})
 export class InventoryItem {
     @Prop({ required: true })
     productId: String;
@@ -14,7 +14,7 @@ export class InventoryItem {
 }
 
 @Schema({_id: false})
-class Quantity {
+export class Quantity {
     @Prop({ required: true })
     count: number;
     @Prop({ required: true })

@@ -30,14 +30,14 @@ export class UnitController {
     @Put(':id')
     @ApiOperation({ summary: 'Update a unit by id' })
     async updateUnit(@Request() apiRequest, @Body() updateUnitDto: AddUnitDto, @Param('id') id: string) {
-        const organizationId = apiRequest.organizationIdl;
+        const organizationId = apiRequest.organizationId;
         await this._unitService.updateById(organizationId, id, updateUnitDto);
         return { status: 200, message: 'Unit updated successfully' };
     }
 
-    @Delete()
+    @Delete(':id')
     @ApiOperation({ summary: 'Delete a Unit by ID' })
-    async deleteUnit(@Body('id') id: string) {
+    async deleteUnit(@Param('id') id: string) {
         await this._unitService.deleteById(id);
         return { status: 200, message: 'Unit deleted successfully' };
     }

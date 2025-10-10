@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { TransactionType } from "./transaction.enum";
+import { QuantityDto } from "src/inventory-item/inventory-item.dto";
 
 export class AddTransactionDto {
     @ApiProperty({ description: 'Rate of the transaction', example: 100 })
@@ -10,8 +11,8 @@ export class AddTransactionDto {
     partnerId: string;
     @ApiProperty({ description: 'ID of the outlet involved in the transaction', example: '60c72b2f9b1e8b001c8e4d3c' })
     outletId: string;
-    @ApiProperty({ description: 'Count of items in the transaction', example: 10 })
-    count: number;    
+    @ApiProperty({ description: 'Quantity of items' })
+    quantity: QuantityDto;    
     @ApiProperty({ description: 'Type of the transaction', enum: TransactionType, example: TransactionType.SALE })
     transactionType: TransactionType;
 }

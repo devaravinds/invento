@@ -18,6 +18,9 @@ export class QuantityDto {
 
 export class InventoryItemResponseDto {
     @ApiProperty()
+    id: string;
+    
+    @ApiProperty()
     productId: string;
 
     @ApiProperty()

@@ -8,6 +8,10 @@ import { ProductService } from "src/product/product.service";
 import { OutletService } from "src/outlet/outlet.service";
 import { OrganizationService } from "src/organization/organization.service";
 import { TransactionStatus } from "./transaction.enum";
+import { InventoryItemService } from "src/inventory-item/inventory-item.service";
+import { AddInventoryItemDto } from "src/inventory-item/inventory-item.dto";
+import { UnitService } from "src/unit/unit.service";
+import { TransactionServiceHelper } from "./transaction.service.helper";
 
 @Injectable()
 export class TransactionService extends BaseService<TransactionDocument> {
@@ -17,13 +21,16 @@ export class TransactionService extends BaseService<TransactionDocument> {
         private readonly _transactionRepository: Model<TransactionDocument>,
         private readonly _productService: ProductService,
         private readonly _outletService: OutletService,
-        private readonly _organizationService: OrganizationService
+        private readonly _organizationService: OrganizationService,
+        private readonly _inventoryItemService: InventoryItemService,
+        private readonly _unitService: UnitService
     ) {
         super(_transactionRepository);
     }
 
     async addTransaction(organizationId: string, addTransactionDto: AddTransactionDto) {
-        const { productId, outletId, partnerId, rate, count, transactionType } = addTransactionDto;
+        const { productId, outletId, partnerId, rate, transactionType } = addTransactionDto;
+        let { quantity } = addTransactionDto;
         
         const product = await this._productService.getById(productId);
         if (!product || product.organizationId !== organizationId) {
@@ -40,16 +47,48 @@ export class TransactionService extends BaseService<TransactionDocument> {
             throw new BadRequestException(`Organization with ID ${organizationId} does not exist.`);
         }
 
+        const [inventoryItem, parentTree] = await Promise.all([
+            this._inventoryItemService.getInventoryItemByOutletAndProduct(outletId, productId),
+            this._unitService.getParentTree(quantity.unit),
+        ]);
+
+        if (!inventoryItem) {
+            if (parentTree.length > 1) {
+                quantity = TransactionServiceHelper.convertToTopLevelUnit(quantity, parentTree);
+            }
+            const newInventoryItem: AddInventoryItemDto = {
+                productId,
+                outletId,
+                quantities: [quantity]
+            }
+            await this._inventoryItemService.addInventoryItem(newInventoryItem);
+        }
+        else {
+            const existingQuantities = inventoryItem.quantityAvailable;
+            if (parentTree.length > 1) {
+                quantity = TransactionServiceHelper.convertToTopLevelUnit(quantity, parentTree);
+            }
+            existingQuantities.forEach(existingQuantity => {
+                if(existingQuantity.unit === quantity.unit) {
+                    existingQuantity.count += quantity.count;
+                }
+            })
+            await this._inventoryItemService.updateAvailableQuantity(inventoryItem.id, existingQuantities);
+        }
         const newTransaction: Transaction = {
             productId,
             outletId,
             partnerId,
             rate,
-            count,
+            quantity,
             transactionType,
             transactionStatus: TransactionStatus.PENDING
         } 
         const createdTransaction = await this._transactionRepository.create(newTransaction);
         return createdTransaction._id.toString();
+    }
+
+    async getTransactionsByOrganization(organizationId: string) {
+        
     }
 }

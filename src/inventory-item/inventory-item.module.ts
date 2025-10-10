@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { InventoryItemSchema } from './inventory-item.entity';
 import { ProductModule } from 'src/product/product.module';
 import { OutletModule } from 'src/outlet/outlet.module';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -15,6 +16,10 @@ import { OutletModule } from 'src/outlet/outlet.module';
     OutletModule
   ],
   controllers: [InventoryItemController],
-  providers: [InventoryItemService]
+  providers: [
+    InventoryItemService,
+    JwtService
+  ],
+  exports: [InventoryItemService]
 })
 export class InventoryItemModule {}

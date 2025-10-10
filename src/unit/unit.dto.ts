@@ -1,15 +1,21 @@
+import { ApiProperty } from "@nestjs/swagger";
+
 export class AddUnitDto {
+    @ApiProperty()
     name: string;
+    @ApiProperty()
     symbol: string;
-    conversionFactor: number;
-    parent: string;
+    @ApiProperty()
+    conversionFactor?: number;
+    @ApiProperty()
+    parent?: string;
 }
 
 export class UnitResponseDto {
     id: string;
     name: string
     symbol: string;
-    conversionFactor: number;
-    parent?: string;
     organizationId: string;
+    conversionFactor?: number;
+    parent?: string;
 }

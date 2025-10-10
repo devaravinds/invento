@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { AddInventoryItemDto, InventoryItemResponseDto } from './inventoty-item.dto';
+import { AddInventoryItemDto, InventoryItemResponseDto, QuantityDto } from './inventory-item.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { InventoryItem, InventoryItemDocument } from './inventory-item.entity';
+import { InventoryItem, InventoryItemDocument, Quantity } from './inventory-item.entity';
 import { ProductService } from 'src/product/product.service';
 import { OutletService } from 'src/outlet/outlet.service';
 import { BaseService } from 'src/base/base.service';
@@ -55,9 +55,9 @@ export class InventoryItemService extends BaseService<InventoryItemDocument> {
         }
     }
 
-    async updateAvailableQuantity(id: string, quantity: number) {
+    async updateAvailableQuantity(id: string, quantities: QuantityDto[]) {
         try {
-            const updatedInventoryItem = await this._inventoryItemRepository.findByIdAndUpdate(id, { quantity: quantity });
+            const updatedInventoryItem = await this._inventoryItemRepository.findByIdAndUpdate(id, { quantities: quantities });
             if (!updatedInventoryItem) {
                 throw new BadRequestException(`Inventory item with ID ${id} does not exist.`);
             }
@@ -79,6 +79,7 @@ export class InventoryItemService extends BaseService<InventoryItemDocument> {
                 const inventoryItemsWithProductInfo: InventoryItemResponseDto[] = inventoryItems.map(item => {
                 const product = products.find(product => product.id === item.productId.toString());
                     return {
+                        id: item._id.toString(),
                         productId: product.id,
                         name: product.name,
                         quantityAvailable: item.quantities
@@ -95,7 +96,7 @@ export class InventoryItemService extends BaseService<InventoryItemDocument> {
         }
     }
 
-    async getIventoryItemByOutletAndProduct(productId: string, outletId: string): Promise<InventoryItemResponseDto> {
+    async getInventoryItemByOutletAndProduct(productId: string, outletId: string): Promise<InventoryItemResponseDto> {
         try {
             const inventoryItem = await this._inventoryItemRepository.findOne({ outletId, productId });
             if (!inventoryItem) {
@@ -104,6 +105,7 @@ export class InventoryItemService extends BaseService<InventoryItemDocument> {
             try {
                 const product = await this._productService.getProductById(productId);
                 const inventoryItemWithProductInfo: InventoryItemResponseDto = {
+                    id: inventoryItem._id.toString(),
                     productId: product.id,
                     name: product.name,
                     quantityAvailable: inventoryItem.quantities,

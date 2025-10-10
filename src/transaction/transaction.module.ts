@@ -7,6 +7,8 @@ import { TransactionController } from "./transaction.controller";
 import { ProductModule } from "src/product/product.module";
 import { OutletModule } from "src/outlet/outlet.module";
 import { OrganizationModule } from "src/organization/organization.module";
+import { InventoryItemModule } from "src/inventory-item/inventory-item.module";
+import { UnitModule } from "src/unit/unit.module";
 
 @Module({
     imports: [
@@ -15,7 +17,9 @@ import { OrganizationModule } from "src/organization/organization.module";
       ]),
       ProductModule,
       OutletModule,
-      OrganizationModule
+      OrganizationModule,
+      InventoryItemModule,
+      UnitModule
     ],
     controllers: [TransactionController],
     providers: [TransactionService, JwtService],
