@@ -7,12 +7,14 @@ export type OutletDocument = Outlet & Document;
 export class Outlet {
     @Prop({ required: true })
     name: string;
-    @Prop({ required: true, unique: true })
-    phone: string;
-    @Prop({ required: true })
-    address: string;
+    @Prop({ required: true})
+    description: string;
     @Prop({ type: String, ref: 'Organization', required: true })
     organizationId: string; 
+    @Prop()
+    address: string;
+    @Prop({ required: true })
+    phone: string;
 }
 
 export const OutletSchema = SchemaFactory.createForClass(Outlet);

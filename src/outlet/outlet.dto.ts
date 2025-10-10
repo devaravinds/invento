@@ -1,8 +1,21 @@
 import { ApiProperty } from "@nestjs/swagger";
 
 export class AddOutletDto {
+    @ApiProperty({ type: String, required: true })
+    name: string;
+    @ApiProperty({ type: String, required: true })
+    description: string;
     @ApiProperty({ type: String })
-    organizationId: string;
+    address: string;
+    @ApiProperty({ type: String })
+    phone?: string;
+}
+
+export class OutletByPhoneResponseDto {
+    @ApiProperty({ type: String })
+    id: string;
+    @ApiProperty({ type: String })
+    organizationName: string;
     @ApiProperty({ type: String })
     name: string;
     @ApiProperty({ type: String })
@@ -15,11 +28,11 @@ export class OutletResponseDto {
     @ApiProperty({ type: String })
     id: string;
     @ApiProperty({ type: String })
-    organizationName: string;
+    name: string
     @ApiProperty({ type: String })
-    name: string;
+    description: string
     @ApiProperty({ type: String })
-    address: string;
+    address: string
     @ApiProperty({ type: String })
-    phone: string;
+    phone: string
 }

@@ -4,6 +4,7 @@ import { OutletService } from './outlet.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { OutletSchema } from './outlet.entity';
 import { OrganizationModule } from 'src/organization/organization.module';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports:[
@@ -13,7 +14,10 @@ import { OrganizationModule } from 'src/organization/organization.module';
     OrganizationModule
   ],
   controllers: [OutletController],
-  providers: [OutletService],
+  providers: [
+    OutletService,
+    JwtService
+  ],
   exports: [OutletService]
 })
 export class OutletModule {}

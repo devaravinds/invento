@@ -25,13 +25,13 @@ export class TransactionService extends BaseService<TransactionDocument> {
     async addTransaction(organizationId: string, addTransactionDto: AddTransactionDto) {
         const { productId, outletId, partnerId, rate, count, transactionType } = addTransactionDto;
         
-        const productExists = await this._productService.getById(productId);
-        if (!productExists || productExists.organizationId !== organizationId) {
+        const product = await this._productService.getById(productId);
+        if (!product || product.organizationId !== organizationId) {
             throw new BadRequestException(`Product with ID ${productId} does not exist.`);
         }
 
-        const outletExists = await this._outletService.getById(outletId);
-        if (!outletExists || outletExists.organizationId !== organizationId) {
+        const outlet = await this._outletService.getById(outletId);
+        if (!outlet || outlet.organizationId !== organizationId) {
             throw new BadRequestException(`Outlet with ID ${outletId} does not exist.`);
         }
 
@@ -49,5 +49,7 @@ export class TransactionService extends BaseService<TransactionDocument> {
             transactionType,
             transactionStatus: TransactionStatus.PENDING
         } 
+        const createdTransaction = await this._transactionRepository.create(newTransaction);
+        return createdTransaction._id.toString();
     }
 }

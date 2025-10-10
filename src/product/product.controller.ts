@@ -40,7 +40,7 @@ export class ProductController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all Products' })
+  @ApiOperation({ summary: 'Get all Products by Organization' })
   async getProductsByOrganization(@Request() apiRequest) {
     const organizationId = apiRequest.organizationId;
     const products = await this._productService.getProductsByOrganization(organizationId);
