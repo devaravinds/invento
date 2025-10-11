@@ -45,7 +45,7 @@ export class ProductService extends BaseService<ProductDocument> {
         }
     }
 
-    async getProductsByIds(productIds: String[]): Promise<ProductResponseDto[]> {
+    async getProductsByIds(productIds: string[]): Promise<ProductResponseDto[]> {
         try {
             const products = await this._productRepository.find({ _id: { $in: productIds } });
             return products.map(product => ({

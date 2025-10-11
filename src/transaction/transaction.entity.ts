@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { TransactionStatus, TransactionType } from "./transaction.enum";
 import { Document } from "mongoose";
-import { Quantity } from "src/inventory-item/inventory-item.entity";
+import { Quantity } from "src/inventory/inventory.entity";
 
 export type TransactionDocument = Transaction & Document;
 

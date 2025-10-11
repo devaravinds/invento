@@ -8,8 +8,8 @@ import { ProductService } from "src/product/product.service";
 import { OutletService } from "src/outlet/outlet.service";
 import { OrganizationService } from "src/organization/organization.service";
 import { TransactionStatus, TransactionType } from "./transaction.enum";
-import { InventoryItemService } from "src/inventory-item/inventory-item.service";
-import { AddInventoryItemDto, QuantityDto } from "src/inventory-item/inventory-item.dto";
+import { InventoryService } from "src/inventory/inventory.service";
+import { AddInventoryItemDto, QuantityDto } from "src/inventory/inventory.dto";
 import { UnitService } from "src/unit/unit.service";
 import { TransactionServiceHelper } from "./transaction.service.helper";
 import Decimal from "decimal.js";
@@ -24,7 +24,7 @@ export class TransactionService extends BaseService<TransactionDocument> {
         private readonly _productService: ProductService,
         private readonly _outletService: OutletService,
         private readonly _organizationService: OrganizationService,
-        private readonly _inventoryItemService: InventoryItemService,
+        private readonly _inventoryService: InventoryService,
         private readonly _unitService: UnitService
     ) {
         super(_transactionRepository);
@@ -54,7 +54,7 @@ export class TransactionService extends BaseService<TransactionDocument> {
         }
 
         const [inventoryItem, parentTree] = await Promise.all([
-            this._inventoryItemService.getInventoryItemByOutletAndProduct(productId, outletId),
+            this._inventoryService.getInventoryItemByOutletAndProduct(productId, outletId),
             this._unitService.getParentTree(decimalQuantity.unit),
         ]);
 
@@ -74,7 +74,7 @@ export class TransactionService extends BaseService<TransactionDocument> {
                 outletId,
                 quantities: [quantityToSave]
             }
-            await this._inventoryItemService.addInventoryItem(newInventoryItem);
+            await this._inventoryService.addInventoryItem(newInventoryItem);
         }
         else {
             const existingQuantities = inventoryItem.quantityAvailable;
@@ -95,7 +95,7 @@ export class TransactionService extends BaseService<TransactionDocument> {
                     }
                 }
             })
-            await this._inventoryItemService.updateAvailableQuantity(inventoryItem.id, existingQuantities);
+            await this._inventoryService.updateAvailableQuantity(inventoryItem.id, existingQuantities);
         }
         const newTransaction: Transaction = {
             productId,

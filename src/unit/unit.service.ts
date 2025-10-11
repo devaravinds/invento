@@ -41,6 +41,19 @@ export class UnitService extends BaseService<UnitDocument> {
         };
     }
 
+    
+    async getUnitByIds(unitIds: string[]): Promise<UnitResponseDto[]> {
+        const units = await this._unitRepository.find({_id: { $in: unitIds }}).exec();
+        return units.map(unit => ({
+            id: unit._id.toString(),
+            name: unit.name,
+            symbol: unit.symbol,
+            conversionFactor: unit.conversionFactor,
+            parent: unit.parent,
+            organizationId: unit.organizationId
+        }));
+    }
+
     async findUnitsWithSameNameOrSymbol(organizationId: string, name: string, symbol: string): Promise<string[]> {
         const existingUnits = await this._unitRepository.find({
             organizationId: organizationId,

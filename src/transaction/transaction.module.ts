@@ -7,7 +7,7 @@ import { TransactionController } from "./transaction.controller";
 import { ProductModule } from "src/product/product.module";
 import { OutletModule } from "src/outlet/outlet.module";
 import { OrganizationModule } from "src/organization/organization.module";
-import { InventoryItemModule } from "src/inventory-item/inventory-item.module";
+import { InventoryModule } from "src/inventory/inventory.module";
 import { UnitModule } from "src/unit/unit.module";
 
 @Module({
@@ -18,7 +18,7 @@ import { UnitModule } from "src/unit/unit.module";
       ProductModule,
       OutletModule,
       OrganizationModule,
-      InventoryItemModule,
+      InventoryModule,
       UnitModule
     ],
     controllers: [TransactionController],

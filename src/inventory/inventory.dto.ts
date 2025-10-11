@@ -24,7 +24,7 @@ export class DecimalQuantity {
     unit: string;
 }
 
-export class InventoryItemResponseDto {
+export class InventoryResponseDto {
     @ApiProperty()
     id: string;
     
@@ -35,8 +35,22 @@ export class InventoryItemResponseDto {
     name: string;
 
     @ApiProperty()
-    quantityAvailable: QuantityDto[];
+    quantityAvailable: QuantityResponseDto[];
 
     @ApiProperty({ required: false })
     description?: string;
+}
+
+export class QuantityResponseDto {
+    @ApiProperty()
+    unit: string
+
+    @ApiProperty()
+    count: number;
+
+    @ApiProperty()
+    unitName: string;
+    
+    @ApiProperty()
+    unitSymbol: string;
 }

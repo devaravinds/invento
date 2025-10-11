@@ -1,14 +1,14 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document } from "mongoose";
 
-export type InventoryItemDocument = InventoryItem & Document;
+export type InventoryDocument = Inventory & Document;
 
-@Schema({collection: 'inventory_item', timestamps: true})
-export class InventoryItem {
+@Schema({collection: 'inventory', timestamps: true})
+export class Inventory {
     @Prop({ required: true })
-    productId: String;
+    productId: string;
     @Prop({ required: true })
-    outletId: String;
+    outletId: string;
     @Prop({ required: false, default: [] , type: Array})
     quantities: Quantity[];
 }
@@ -21,4 +21,4 @@ export class Quantity {
     unit: string;
 }
 
-export const InventoryItemSchema = SchemaFactory.createForClass(InventoryItem);
+export const InventorySchema = SchemaFactory.createForClass(Inventory);

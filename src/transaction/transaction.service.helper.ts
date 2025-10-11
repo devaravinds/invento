@@ -1,4 +1,4 @@
-import { DecimalQuantity } from "src/inventory-item/inventory-item.dto";
+import { DecimalQuantity } from "src/inventory/inventory.dto";
 import { UnitResponseDto } from "src/unit/unit.dto";
 
 export class TransactionServiceHelper {
