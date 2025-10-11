@@ -97,28 +97,29 @@ export class InventoryItemService extends BaseService<InventoryItemDocument> {
     }
 
     async getInventoryItemByOutletAndProduct(productId: string, outletId: string): Promise<InventoryItemResponseDto> {
+        let inventoryItem, product;
         try {
-            const inventoryItem = await this._inventoryItemRepository.findOne({ outletId, productId });
-            if (!inventoryItem) {
-                throw new BadRequestException(`Inventory item with product ID ${productId} does not exist for outlet ID ${outletId}.`);
-            }
-            try {
-                const product = await this._productService.getProductById(productId);
-                const inventoryItemWithProductInfo: InventoryItemResponseDto = {
-                    id: inventoryItem._id.toString(),
-                    productId: product.id,
-                    name: product.name,
-                    quantityAvailable: inventoryItem.quantities,
-                    description: product.description
-                };
-                return inventoryItemWithProductInfo;
-            }
-            catch(error) {
-                throw new InternalServerErrorException(`Error retrieving product for product ID ${productId}: ${error.message}`);
-            }
+            inventoryItem = await this._inventoryItemRepository.findOne({ outletId, productId });
         }
-        catch (error) {
+        catch(error) {
             throw new InternalServerErrorException(`Error retrieving inventory item for product ID ${productId} and outlet ID ${outletId}: ${error.message}`);
         }
+        if (!inventoryItem) {
+            return null;
+        }
+        try {
+            product = await this._productService.getProductById(productId);
+        }
+        catch(error) {
+            throw new InternalServerErrorException(`Error retrieving product for product ID ${productId}: ${error.message}`);
+        }
+        const inventoryItemWithProductInfo: InventoryItemResponseDto = {
+            id: inventoryItem._id.toString(),
+            productId: product.id,
+            name: product.name,
+            quantityAvailable: inventoryItem.quantities,
+            description: product.description
+        };
+        return inventoryItemWithProductInfo;
     }
 }

@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import Decimal from "decimal.js";
 
 export class AddInventoryItemDto {
     @ApiProperty({required: true})
@@ -12,6 +13,13 @@ export class AddInventoryItemDto {
 export class QuantityDto {
     @ApiProperty()
     count: number;
+    @ApiProperty()
+    unit: string;
+}
+
+export class DecimalQuantity {
+    @ApiProperty()
+    count: Decimal;
     @ApiProperty()
     unit: string;
 }

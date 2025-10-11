@@ -74,4 +74,30 @@ export class PartnerService extends BaseService<PartnerDocument> {
           throw new InternalServerErrorException(`Error retrieving partners. Error: ${error.message}`);
       }
     }
+
+  async getPartnerById(partnerId: string, organizationId: string): Promise<PartnerResponseDto> {
+    try {
+      const partner = await this._partnerRepository.findById(partnerId);
+
+      if (!partner || partner.organizationId != organizationId) {
+        throw new NotFoundException(`Partner with ID ${partnerId} not found in the current organization`);
+      }
+
+      const { _id, name, description, phone } = partner;
+
+      return {
+        id: _id.toString(),
+        name,
+        description,
+        phone,
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error;
+
+      throw new InternalServerErrorException(
+        `Failed to retrieve partner with ID ${partnerId}. Error: ${error?.message || error}`
+      );
+    }
+  }
+
 }

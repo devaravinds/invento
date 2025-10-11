@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Param, Post, Put, Get, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Param, Post, Put, Get, Request, UseGuards, Req } from '@nestjs/common';
 import { ApiBearerAuth, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/authentication/authentication.guard';
 import { Roles } from 'src/authentication/authentication.decorator';
@@ -44,6 +44,18 @@ export class PartnerController {
       status: HttpStatus.OK,
       message: 'Partners retrieved successfully',
       data: partners,
+    };
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get Partner by id'})
+  async getPartnerById(@Request() apiRequest, @Param('id') id: string) {
+    const organizationId = apiRequest.organizationId;
+    const partner = await this._partnerService.getPartnerById(id, organizationId)
+    return {
+      status: HttpStatus.OK,
+      message: 'Partner retrieved successfully',
+      data: partner,
     };
   }
 }
