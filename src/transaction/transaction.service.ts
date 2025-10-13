@@ -1,5 +1,5 @@
 import { Model } from "mongoose";
-import { AddTransactionDto } from "./transaction.dto";
+import { AddTransactionDto, TransactionResponseDto } from "./transaction.dto";
 import { Transaction, TransactionDocument } from "./transaction.entity";
 import { BaseService } from "src/base/base.service";
 import { BadRequestException, ConflictException, Injectable } from "@nestjs/common";
@@ -110,7 +110,19 @@ export class TransactionService extends BaseService<TransactionDocument> {
         return createdTransaction._id.toString();
     }
 
-    async getTransactionsByOrganization(organizationId: string) {
-        
+    async getTransactionsByOrganization(organizationId: string): Promise<TransactionResponseDto[]> {
+        const outlets = await this._outletService.getOutletsByOrganization(organizationId);
+        const outletIds = outlets.map(outlet => outlet.id)
+        if(!outletIds.length){
+            return [];
+        }
+        const transactions = await this._transactionRepository.find({outletId: {$in: outletIds}});
+        return transactions.map(transaction => ({
+            id: transaction.id,
+            transactionType: transaction.transactionType,
+            amount: transaction.amount,
+            transactionStatus: transaction.transactionStatus,
+            transactionTime: transaction['createdAt']
+        }))
     }
 }
