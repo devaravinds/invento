@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UnitService } from './unit.service';
 import { AddUnitDto } from './unit.dto';
@@ -24,7 +24,8 @@ export class UnitController {
     @ApiOperation({ summary: 'Get all Units for an organization' })
     async getUnits(@Request() apiRequest) {
         const organizationId = apiRequest.organizationId;
-        return this._unitService.getUnitsByOrganization(organizationId);
+        const units = await this._unitService.getUnitsByOrganization(organizationId);
+        return { status: HttpStatus.OK, data: units, message: "Units fetched Successfully" }
     }
 
     @Put(':id')
