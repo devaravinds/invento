@@ -20,7 +20,7 @@ export class UserController {
     async register(@Body() registerDto: RegisterDto) {
         const userId = await this._userService.register(registerDto);
         return {
-            status: HttpStatus.CREATED,
+            statusCode: HttpStatus.CREATED,
             message: 'User registered successfully',
             id: userId,
         };
@@ -32,7 +32,7 @@ export class UserController {
     async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
         await this._userService.updateUser(id, updateUserDto)
         return { 
-            status: HttpStatus.OK, 
+            statusCode: HttpStatus.OK, 
             message: 'User Updated Successfully', 
             id: id 
         }
@@ -47,7 +47,7 @@ export class UserController {
         const organizationId = apiRequest.organizationId;
         await this._userService.inviteUserToOrganization(id, organizationId, role);
         return {
-            status: HttpStatus.OK,
+            statusCode: HttpStatus.OK,
             message: 'User invited to organization successfully',
             id: id,
         };
@@ -62,7 +62,7 @@ export class UserController {
         const userId = apiRequest.user.id
         await this._userService.updateInvitationStatus(userId, organizationId, invitationStatus);
         return {
-            status: HttpStatus.OK,
+            statusCode: HttpStatus.OK,
             message: 'Invitation accepted successfully',
             id: userId,
         };
@@ -75,7 +75,7 @@ export class UserController {
         const userId = apiRequest.user.id;
         const organizations = await this._userService.getCurrentUsersOrganizations(userId);
         return {
-            status: HttpStatus.OK,
+            statusCode: HttpStatus.OK,
             message: 'Organizations retrieved successfully',
             data: organizations,
         };
@@ -88,7 +88,7 @@ export class UserController {
     async getAllUsers() {
         const users = await this._userService.getAllUsers();
         return {
-            status: HttpStatus.OK,
+            statusCode: HttpStatus.OK,
             message: 'Users retrieved successfully',
             data: users,
         };

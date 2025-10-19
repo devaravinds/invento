@@ -18,7 +18,7 @@ export class OrganizationService extends BaseService<OrganizationDocument> {
         const newOrganization = new this._organizationRepository(addOrganizationDto);
         try {
             const createdOrganization = await newOrganization.save();
-            return {status: HttpStatus.CREATED, message: 'Organization created successfully', id: createdOrganization._id};
+            return {statusCode: HttpStatus.CREATED, message: 'Organization created successfully', id: createdOrganization._id};
         }
         catch (error) {
             throw new InternalServerErrorException(`Error creating organization: ${error.message}`);

@@ -21,7 +21,7 @@ export class PartnerController {
     const organizationId = apiRequest.organizationId;
     const partnerId = await this._partnerService.addPartner(organizationId, addPartnernDto);
     return {
-      status: HttpStatus.CREATED, 
+      statusCode: HttpStatus.CREATED, 
       message: 'Partner Added Successfully', 
       id: partnerId
     };
@@ -32,7 +32,7 @@ export class PartnerController {
   async updatePartner(@Request() apiRequest, @Body() addPartnerDto: AddPartnerDto, @Param('id') id: string) {
     const organizationId = apiRequest.organizationId;
     await this._partnerService.updatePartner(organizationId, id, addPartnerDto);
-    return {status: HttpStatus.OK, message: 'Partner Updated Successfully', id: id}
+    return {statusCode: HttpStatus.OK, message: 'Partner Updated Successfully', id: id}
   }
 
   @Get()
@@ -41,7 +41,7 @@ export class PartnerController {
     const organizationId = apiRequest.organizationId;
     const partners = await this._partnerService.getPartnersByOrganization(organizationId);
     return {
-      status: HttpStatus.OK,
+      statusCode: HttpStatus.OK,
       message: 'Partners retrieved successfully',
       data: partners,
     };
@@ -53,7 +53,7 @@ export class PartnerController {
     const organizationId = apiRequest.organizationId;
     const partner = await this._partnerService.getPartnerById(id, organizationId)
     return {
-      status: HttpStatus.OK,
+      statusCode: HttpStatus.OK,
       message: 'Partner retrieved successfully',
       data: partner,
     };

@@ -30,7 +30,7 @@ export class OutletService extends BaseService<OutletDocument> {
         }
         try {
             const createdOutlet = await this._outletRepository.create(newOutlet);
-            return { status: 201, message: 'Outlet created successfully', id: createdOutlet._id };
+            return { statusCode: 201, message: 'Outlet created successfully', id: createdOutlet._id };
         } catch (error) {
             throw new InternalServerErrorException(`Error creating outlet: ${error.message}`);
         }

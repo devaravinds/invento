@@ -42,7 +42,7 @@ export class InventoryService extends BaseService<InventoryDocument> {
                     }
                 })
                 const updatedInventoryItem = await this._inventoryRepository.updateOne({ productId, outletId }, { $set: { quantities: quantities } });
-                return { status: 200, message: 'Inventory item updated successfully', id: updatedInventoryItem.upsertedId };
+                return { statusCode: 200, message: 'Inventory item updated successfully', id: updatedInventoryItem.upsertedId };
             }
             catch (error) {
                 throw new InternalServerErrorException(`Error updating inventory item: ${error.message}`);
@@ -51,7 +51,7 @@ export class InventoryService extends BaseService<InventoryDocument> {
         const newInventoryItem = new this._inventoryRepository(addInventoryItem);
         try {
             const createdInventoryItem = await newInventoryItem.save();
-            return { status: 201, message: 'Inventory item created successfully', id: createdInventoryItem._id };
+            return { statusCode: 201, message: 'Inventory item created successfully', id: createdInventoryItem._id };
         } catch (error) {
             throw new InternalServerErrorException(`Error creating inventory item: ${error.message}`);
         }
@@ -63,7 +63,7 @@ export class InventoryService extends BaseService<InventoryDocument> {
             if (!updatedInventoryItem) {
                 throw new BadRequestException(`Inventory item with ID ${id} does not exist.`);
             }
-            return { status: 200, message: 'Inventory item quantity updated successfully', id: updatedInventoryItem._id };
+            return { statusCode: 200, message: 'Inventory item quantity updated successfully', id: updatedInventoryItem._id };
         } catch (error) {
             throw new InternalServerErrorException(`Error updating inventory item quantity: ${error.message}`);
         }

@@ -45,7 +45,7 @@ export class ProductController {
     const organizationId = apiRequest.organizationId;
     const products = await this._productService.getProductsByOrganization(organizationId);
     return {
-      status: HttpStatus.OK,
+      statusCode: HttpStatus.OK,
       message: 'Products retrieved successfully',
       data: products,
     };

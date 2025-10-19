@@ -26,6 +26,6 @@ export class OrganizationController {
   @Roles(UserRoles.ADMIN, UserRoles.SUPER_ADMIN)
   async updateOrganization(@Body() addOrganizationDto: AddOrganizationDto, @Param('id') id: string) {
     await this._organizationService.updateOrganization(id, addOrganizationDto);
-    return {status: HttpStatus.OK, message: 'Organization Updated Successfully', id: id}
+    return {statusCode: HttpStatus.OK, message: 'Organization Updated Successfully', id: id}
   }
 }

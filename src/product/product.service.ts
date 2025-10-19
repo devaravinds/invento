@@ -21,7 +21,7 @@ export class ProductService extends BaseService<ProductDocument> {
         };
         try {
             const createdProduct = await this._productRepository.create(newProduct);
-            return {status: HttpStatus.CREATED, message: 'Product created successfully', id: createdProduct._id};
+            return {statusCode: HttpStatus.CREATED, message: 'Product created successfully', id: createdProduct._id};
         }
         catch (error) {
             throw new InternalServerErrorException(`Error creating product: ${error.message}`);

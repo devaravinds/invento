@@ -28,14 +28,14 @@ export class InventoryController {
     @ApiOperation({ summary: 'Get Inventory of an outlet' })
     async getInventoryByOutlet(@Param('outletId') outletId: string) {
         const inventoryItems = await this._inventoryService.getInventoryByOutlet(outletId);
-        return { status: 200, message: 'Inventory retrieved successfully', data: inventoryItems };
+        return { statusCode: 200, message: 'Inventory retrieved successfully', data: inventoryItems };
     }
 
     @Get(':productId/:outletId')
     @ApiOperation({ summary: 'Get Inventory by product and outlet' })
     async getInventoryByProductAndOutlet(@Param('productId') productId: string, @Param('outletId') outletId: string) {
         const inventoryItem = await this._inventoryService.getInventoryItemByOutletAndProduct(productId, outletId);
-        return { status: 200, message: 'Inventory item retrieved successfully', data: inventoryItem };
+        return { statusCode: 200, message: 'Inventory item retrieved successfully', data: inventoryItem };
     }
 
     @Get()
@@ -44,7 +44,7 @@ export class InventoryController {
         const organizationId = apiRequest.organizationId;
         const inventory = await this._inventoryService.getInventoryByOrganization(organizationId);
         return {
-            status: HttpStatus.OK,
+            statusCode: HttpStatus.OK,
             message: "Inventory retrieved successfully",
             data: inventory
         }

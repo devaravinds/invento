@@ -18,7 +18,7 @@ export class TransactionController {
         const organizationId = apiRequest.organizationId;
         const transactionId = await this._transactionService.addTransaction(organizationId, addTransactionDto);
         return {
-            status: 201,
+            statusCode: 201,
             message: 'Transaction Added Successfully',
             id: transactionId
         };
@@ -30,7 +30,7 @@ export class TransactionController {
         const organizationId = apiRequest.organizationId;
         const transactions = await this._transactionService.getTransactionsByOrganization(organizationId);
         return {
-            status: 200,
+            statusCode: 200,
             data: transactions,
             message: 'Transactions fetched successfully'
         }

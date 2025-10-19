@@ -17,7 +17,7 @@ export class AuthenticationController {
     async login(@Body() loginDto: LoginDto) {
         const loginResponse: LoginResponse = await this._authenticationService.login(loginDto);
         return {
-            status: 200,
+            statusCode: 200,
             message: 'Login successful',
             data: loginResponse,
         };
@@ -31,7 +31,7 @@ export class AuthenticationController {
         const secretKey = apiRequest.headers['secret-key'];
         const userId = await this._authenticationService.createSuperAdmin(secretKey, loginDto);
         return {
-            status: 201,
+            statusCode: 201,
             message: 'Super Admin created successfully',
             id: userId,
         };

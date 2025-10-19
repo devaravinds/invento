@@ -30,7 +30,7 @@ export class OutletController {
     async getOutletByPhone(@Param('phone') phone: string) {
         const outlet: OutletByPhoneResponseDto = await this._outletService.getOutletByPhone(phone);
         return {
-            status: 200,
+            statusCode: 200,
             message: 'Outlet retrieved successfully',
             data: outlet
         };
@@ -42,7 +42,7 @@ export class OutletController {
         const organizationId = apiRequest.organizationId;
         const outlets: OutletResponseDto[] = await this._outletService.getOutletsByOrganization(organizationId);
         return {
-            status: 200,
+            statusCode: 200,
             message: 'Outlets retrieved successfully',
             data: outlets
         };
