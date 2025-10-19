@@ -22,6 +22,10 @@ export class Transaction {
     @Prop({ required: true, enum: TransactionType })
     transactionType: TransactionType;
     @Prop()
+    dueDate?: Date;
+    @Prop()
+    paidOn?: Date;
+    @Prop()
     amount?: number;
 }
 

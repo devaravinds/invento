@@ -15,6 +15,12 @@ export class AddTransactionDto {
     quantity: QuantityDto;    
     @ApiProperty({ description: 'Type of the transaction', enum: TransactionType, example: TransactionType.SALE })
     transactionType: TransactionType;
+    @ApiProperty({ description: 'Status of the transaction', enum: TransactionStatus, example: TransactionStatus.PENDING })
+    transactionStatus: TransactionStatus;
+    @ApiProperty({ description: 'Due date for the transaction, if applicable', example: '2024-12-31T23:59:59.999Z', required: false })
+    dueDate?: Date;
+    @ApiProperty({ description: 'Date when the transaction was paid, if applicable', example: '2024-11-30T23:59:59.999Z', required: false })
+    paidOn?: Date;
 }
 
 export class TransactionResponseDto {
@@ -27,5 +33,20 @@ export class TransactionResponseDto {
     @ApiProperty()
     transactionStatus: TransactionStatus;
     @ApiProperty()
-    transactionTime: Date;
+    dueDate?: Date;    
+    @ApiProperty()
+    paidOn?: Date;
+}
+
+export class SingleTransactionResponseDto extends TransactionResponseDto {
+    @ApiProperty()
+    rate: number
+    @ApiProperty()
+    productId: string
+    @ApiProperty()
+    partnerId: string
+    @ApiProperty()
+    outletId: string
+    @ApiProperty()
+    quantity: QuantityDto
 }

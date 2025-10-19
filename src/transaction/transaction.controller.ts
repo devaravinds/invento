@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Request, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeader, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AuthGuard } from "src/authentication/authentication.guard";
 import { TransactionService } from "./transaction.service";
@@ -33,6 +33,37 @@ export class TransactionController {
             statusCode: 200,
             data: transactions,
             message: 'Transactions fetched successfully'
+        }
+    }
+
+    @Patch(':id/toggle-status')
+    @ApiOperation({ summary: 'Toggle transaction status' })
+    async toggleTransactionStatus(@Param('id') transactionId: string) {
+        await this._transactionService.toggleTransactionStatus(transactionId);
+        return {
+            statusCode: 200,
+            message: 'Transaction status updated successfully'
+        }
+    }
+
+    @Get(':id')
+    @ApiOperation({ summary: 'Get transaction by ID' })
+    async getTransactionById(@Param('id') transactionId: string) {
+        const transaction = await this._transactionService.getTransactionById(transactionId);
+        return {
+            statusCode: 200,
+            data: transaction,
+            message: 'Transaction fetched successfully'
+        }
+    }
+
+    @Delete(':id')
+    @ApiOperation({ summary: 'Delete transaction by ID' })
+    async deleteTransactionById(@Param('id') transactionId: string) {
+        await this._transactionService.deleteTransactionById(transactionId);
+        return {
+            statusCode: 200,
+            message: 'Transaction deleted successfully'
         }
     }
 }
