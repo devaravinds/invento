@@ -2,7 +2,7 @@ import { Model } from "mongoose";
 import { AddPartnerDto, PartnerResponseDto } from "./partner.dto";
 import { Partner, PartnerDocument } from "./partner.entity";
 import { BaseService } from "src/base/base.service";
-import { BadRequestException, Inject, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { OrganizationService } from "src/organization/organization.service";
 

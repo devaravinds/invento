@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Request, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Request, Res, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeader, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AuthGuard } from "src/authentication/authentication.guard";
 import { TransactionService } from "./transaction.service";
 import { AddTransactionDto } from "./transaction.dto";
+import { Response } from "express";
 
 @Controller('transactions')
 @ApiTags('Transaction APIs')
@@ -65,5 +66,19 @@ export class TransactionController {
             statusCode: 200,
             message: 'Transaction deleted successfully'
         }
+    }
+
+    @Get(':id/pdf')
+    @ApiOperation({ summary: 'Generate PDF for transaction by ID' })
+    async generateTransactionPdf(@Request() apiRequest, @Param('id') transactionId: string, @Res() res: Response) {
+        const organizationId = apiRequest.organizationId;
+        const pdfBuffer = await this._transactionService.generateTransactionPdf(transactionId, organizationId);
+        res.set({
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="transaction-${transactionId}.pdf"`,
+        'Content-Length': pdfBuffer.length,
+        });
+
+        res.end(pdfBuffer);
     }
 }

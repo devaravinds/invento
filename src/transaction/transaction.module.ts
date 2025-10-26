@@ -9,6 +9,8 @@ import { OutletModule } from "src/outlet/outlet.module";
 import { OrganizationModule } from "src/organization/organization.module";
 import { InventoryModule } from "src/inventory/inventory.module";
 import { UnitModule } from "src/unit/unit.module";
+import { PartnerModule } from "src/partner/partner.module";
+import { PdfService } from "src/pdf/pdf.service";
 
 @Module({
     imports: [
@@ -19,10 +21,11 @@ import { UnitModule } from "src/unit/unit.module";
       OutletModule,
       OrganizationModule,
       InventoryModule,
-      UnitModule
+      UnitModule,
+      PartnerModule
     ],
     controllers: [TransactionController],
-    providers: [TransactionService, JwtService],
+    providers: [TransactionService, JwtService, PdfService],
     exports: []
 })
 

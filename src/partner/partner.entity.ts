@@ -13,6 +13,8 @@ export class Partner {
     description?: string;
     @Prop({ unique: true })
     phone?: string;
+    @Prop()
+    address?: string;
 }
 
 export const PartnerSchema = SchemaFactory.createForClass(Partner);

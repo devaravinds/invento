@@ -13,6 +13,8 @@ import { AddInventoryItemDto, QuantityDto } from "src/inventory/inventory.dto";
 import { UnitService } from "src/unit/unit.service";
 import { TransactionServiceHelper } from "./transaction.service.helper";
 import Decimal from "decimal.js";
+import { PdfService } from "src/pdf/pdf.service";
+import { PartnerService } from "src/partner/partner.service";
 
 @Injectable()
 export class TransactionService extends BaseService<TransactionDocument> {
@@ -24,7 +26,9 @@ export class TransactionService extends BaseService<TransactionDocument> {
         private readonly _outletService: OutletService,
         private readonly _organizationService: OrganizationService,
         private readonly _inventoryService: InventoryService,
-        private readonly _unitService: UnitService
+        private readonly _unitService: UnitService,
+        private readonly _pdfService: PdfService,
+        private readonly _partnerService: PartnerService
     ) {
         super(_transactionRepository);
     }
@@ -206,6 +210,13 @@ export class TransactionService extends BaseService<TransactionDocument> {
                 count: transaction.quantity.count
             }
         }
+    }
 
+    async generateTransactionPdf(transactionId: string, organizationId: string): Promise<Buffer> {
+        const transaction = await this.getTransactionById(transactionId);
+        const organization = await this._organizationService.getOrganizationById(organizationId);
+        const partner = await this._partnerService.getPartnerById(transaction.partnerId, organizationId);
+        const pdfBuffer = await this._pdfService.generateTransactionPdf(transaction, organization, partner);
+        return pdfBuffer;
     }
 }

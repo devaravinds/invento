@@ -15,7 +15,7 @@ import { OrganizationModule } from "src/organization/organization.module";
     ],
     controllers: [PartnerController],
     providers: [PartnerService, JwtService],
-    exports: []
+    exports: [PartnerService]
 })
 
 export class PartnerModule {}
