@@ -25,7 +25,9 @@ export class PartnerService extends BaseService<PartnerDocument> {
           name:addPartnerDto.name,
           description: addPartnerDto.description,
           phone: addPartnerDto.phone,
-          organizationId: organizationId
+          organizationId: organizationId,
+          address: addPartnerDto.address,
+          gstNumber: addPartnerDto.gstNumber
         }
         try {
           const createdPartner = await this._partnerRepository.create(partner);
@@ -50,7 +52,9 @@ export class PartnerService extends BaseService<PartnerDocument> {
           name: addPartnerDto.name,
           description: addPartnerDto.description,
           phone: addPartnerDto.phone,
-          organizationId: organizationId
+          organizationId: organizationId,
+          address: addPartnerDto.address,
+          gstNumber: addPartnerDto.gstNumber
         } 
         const updatedPartner = await this._partnerRepository.findByIdAndUpdate(id, partnerToUpdate);
         return updatedPartner._id.toString();
@@ -68,7 +72,14 @@ export class PartnerService extends BaseService<PartnerDocument> {
             name: partner.name,
             description: partner.description,
             phone: partner.phone,
-
+            address: {
+              line1: partner.address.line1,
+              line2: partner.address.line2,
+              city: partner.address.city,
+              state: partner.address.state,
+              pin: partner.address.pin
+            },
+            gstNumber: partner.gstNumber
         }));
       } catch (error) {
           throw new InternalServerErrorException(`Error retrieving partners. Error: ${error.message}`);
@@ -83,13 +94,21 @@ export class PartnerService extends BaseService<PartnerDocument> {
         throw new NotFoundException(`Partner with ID ${partnerId} not found in the current organization`);
       }
 
-      const { _id, name, description, phone } = partner;
+      const { _id, name, description, phone, address, gstNumber } = partner;
 
       return {
         id: _id.toString(),
         name,
         description,
         phone,
+        address: {
+          line1: partner.address.line1,
+          line2: partner.address.line2,
+          city: partner.address.city,
+          state: partner.address.state,
+          pin: partner.address.pin
+        },
+        gstNumber
       };
     } catch (error) {
       if (error instanceof NotFoundException) throw error;

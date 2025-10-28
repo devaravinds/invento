@@ -52,7 +52,10 @@ export class OrganizationService extends BaseService<OrganizationDocument> {
           return {
               id: organization._id.toString(),
               name: organization.name,
-              phone: organization.phone
+              phone: organization.phone,
+              gstNumber: organization.gstNumber,
+              address: organization.address,
+              bankDetails: organization.bankDetails
           }
       } catch (error) {
           throw new InternalServerErrorException(`Error retrieving organization by ID: ${error.message}`);
@@ -66,6 +69,9 @@ export class OrganizationService extends BaseService<OrganizationDocument> {
               id: org._id.toString(),
               name: org.name,
               phone: org.phone,
+              gstNumber: org.gstNumber,
+              address: org.address,
+              bankDetails: org.bankDetails
           }));
       } catch (error) {
           throw new InternalServerErrorException(`Error retrieving organizations by IDs: ${error.message}`);
@@ -79,6 +85,9 @@ export class OrganizationService extends BaseService<OrganizationDocument> {
               id: org._id.toString(),
               name: org.name,
               phone: org.phone,
+              gstNumber: org.gstNumber,
+              address: org.address,
+              bankDetails: org.bankDetails
           }));
       } catch (error) {
           throw new InternalServerErrorException(`Error retrieving all organizations: ${error.message}`);

@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document } from "mongoose";
+import { Address } from "src/common/common.entity";
 
 export type PartnerDocument = Partner & Document;
-
 @Schema({ collection: 'partner', timestamps: true })
 export class Partner {
     @Prop({ required: true })
@@ -10,11 +10,13 @@ export class Partner {
     @Prop({ required: true })
     organizationId: string;
     @Prop()
-    description?: string;
+    description: string;
     @Prop({ unique: true })
-    phone?: string;
+    phone: string;
     @Prop()
-    address?: string;
+    address: Address;
+    @Prop()
+    gstNumber: string;
 }
 
 export const PartnerSchema = SchemaFactory.createForClass(Partner);
