@@ -43,8 +43,8 @@ jobs:
             key: ${{ secrets.LIGHTSAIL_PRIVATE_KEY }}
             script: |
               sudo docker load -i ./invento-backend.tar/invento-backend.tar 
-              cd ~/invento
-              sudo docker compose down
+              sudo docker stop invento-backend || true
+              sudo docker rm invento-backend || true
               sudo docker run -d \
                 --name invento-backend \
                 --restart always \
