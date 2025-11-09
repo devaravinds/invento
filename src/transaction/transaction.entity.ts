@@ -21,6 +21,8 @@ export class Transaction {
     transactionStatus: TransactionStatus
     @Prop({ required: true, enum: TransactionType })
     transactionType: TransactionType;
+    @Prop({ required: true })
+    gstPercentage: number;
     @Prop()
     dueDate?: Date;
     @Prop()

@@ -76,6 +76,7 @@ export class PartnerService extends BaseService<PartnerDocument> {
               line1: partner.address.line1,
               line2: partner.address.line2,
               city: partner.address.city,
+              district: partner.address.district,
               state: partner.address.state,
               pin: partner.address.pin
             },
@@ -105,6 +106,7 @@ export class PartnerService extends BaseService<PartnerDocument> {
           line1: partner.address.line1,
           line2: partner.address.line2,
           city: partner.address.city,
+          district: partner.address.district,
           state: partner.address.state,
           pin: partner.address.pin
         },

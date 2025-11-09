@@ -17,6 +17,8 @@ export class AddTransactionDto {
     transactionType: TransactionType;
     @ApiProperty({ description: 'Status of the transaction', enum: TransactionStatus, example: TransactionStatus.PENDING })
     transactionStatus: TransactionStatus;
+    @ApiProperty({ description: 'GST percentage', example: 5 })
+    gstPercentage: number;
     @ApiProperty({ description: 'Due date for the transaction, if applicable', example: '2024-12-31T23:59:59.999Z', required: false })
     dueDate?: Date;
     @ApiProperty({ description: 'Date when the transaction was paid, if applicable', example: '2024-11-30T23:59:59.999Z', required: false })
@@ -49,4 +51,6 @@ export class SingleTransactionResponseDto extends TransactionResponseDto {
     outletId: string
     @ApiProperty()
     quantity: QuantityDto
+    @ApiProperty()
+    gstPercentage: number
 }

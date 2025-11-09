@@ -34,7 +34,7 @@ export class TransactionController {
             statusCode: 200,
             data: transactions,
             message: 'Transactions fetched successfully'
-        }
+        };
     }
 
     @Patch(':id/toggle-status')
@@ -70,13 +70,21 @@ export class TransactionController {
 
     @Get(':id/pdf')
     @ApiOperation({ summary: 'Generate PDF for transaction by ID' })
-    async generateTransactionPdf(@Request() apiRequest, @Param('id') transactionId: string, @Res() res: Response) {
+    async generateTransactionPdf(
+        @Request() apiRequest,
+        @Param('id') transactionId: string,
+        @Res() res: Response,
+    ) {
         const organizationId = apiRequest.organizationId;
         const pdfBuffer = await this._transactionService.generateTransactionPdf(transactionId, organizationId);
+
+        const date = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+
         res.set({
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="transaction-${transactionId}.pdf"`,
-        'Content-Length': pdfBuffer.length,
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': `attachment; filename="invoice-${transactionId}-${date}.pdf"`,
+            'Content-Length': pdfBuffer.length,
+            'Access-Control-Expose-Headers': 'Content-Disposition'
         });
 
         res.end(pdfBuffer);

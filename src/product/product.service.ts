@@ -17,6 +17,7 @@ export class ProductService extends BaseService<ProductDocument> {
         const newProduct: Product = {
             name: addProductDto.name,
             description: addProductDto.description,
+            hsnCode: addProductDto.hsnCode,
             organizationId
         };
         try {

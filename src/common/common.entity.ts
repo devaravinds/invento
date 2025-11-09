@@ -9,6 +9,8 @@ export class Address {
     @Prop()
     city: string;
     @Prop()
+    district: string;
+    @Prop()
     state: string;
     @Prop()
     pin: string;

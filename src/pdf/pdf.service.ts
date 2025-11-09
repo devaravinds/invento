@@ -5,6 +5,7 @@ import * as PDFDocument from 'pdfkit';
 import { PartnerResponseDto } from "src/partner/partner.dto";
 import Decimal from "decimal.js";
 import { ToWords } from "to-words";
+import { TransactionType } from "src/transaction/transaction.enum";
 
 @Injectable()
 
@@ -19,6 +20,15 @@ export class PdfService {
 
         const { amount } = transactionData;
 
+        let billToPartnerDetailsHeader, shipToPartnerDetailsHeader;
+        if (transactionData.transactionType === TransactionType.PURCHASE) {
+            billToPartnerDetailsHeader = 'Details of Reciever / Billed to';
+            shipToPartnerDetailsHeader = 'Details of Consignee Shipped to';
+        } else {
+            billToPartnerDetailsHeader = 'Bill to Party';
+            shipToPartnerDetailsHeader = 'Ship to Party';
+        } 
+
 
         doc.fillColor('black').fontSize(10).text(`GST no: ${gstNumber}`, { align: 'right' });
         doc.fontSize(23).text(name, { align: 'center' });
@@ -27,7 +37,7 @@ export class PdfService {
             .text(organizationAddressString2, { align: 'center' })
             .moveDown();
 
-        const igst = (amount * 5) / 100;
+        const igst = (amount * transactionData.gstPercentage) / 100;
         const totalAfterTax = new Decimal(amount).plus(igst).toNumber();
 
         const columnWidths = [60, 60, 60, 60, 60, 60, 60, 60]; // 8 columns
@@ -41,7 +51,7 @@ export class PdfService {
             position: { x: x, y: doc.y },
             data: [
                 [
-                    { text: 'GST Invoice', colSpan: 8, align: 'center', font: { size: 18 } }
+                    { text: `GST Invoice - ${transactionData.transactionType}`, colSpan: 8, align: 'center', font: { size: 18 } }
                 ],
                 [
                     { text: `Invoice No : ${"123"}`, colSpan: 4, font: { size: 11 } },
@@ -55,8 +65,8 @@ export class PdfService {
                     { text: '', colSpan: 8 }
                 ],
                 [
-                    { text: "Bill to Party", colSpan: 4, font: { size: 11 } },
-                    { text: "Ship to Party", colSpan: 4, font: { size: 11 } }
+                    { text: billToPartnerDetailsHeader, colSpan: 4, font: { size: 11 } },
+                    { text: shipToPartnerDetailsHeader, colSpan: 4, font: { size: 11 } }
                 ],
                 [
                     { text: `Name: ${partner.name}`, colSpan: 4, font: { size: 11 } },
@@ -81,8 +91,8 @@ export class PdfService {
                 ],
                 [
                     { text: "Product Description", rowSpan: 2, font: { size: 11 } },
+                    { text: "HSN Code", rowSpan: 2, font: { size: 11 } },
                     { text: "Quantity", rowSpan: 2, font: { size: 11 } },
-                    { text: "Unit", rowSpan: 2, font: { size: 11 } },
                     { text: "Rate", rowSpan: 2, font: { size: 11 } },
                     { text: "IGST", colSpan: 2, font: { size: 11 } },
                     { text: "Total", colSpan: 2, font: { size: 11 } }
@@ -95,10 +105,10 @@ export class PdfService {
                 ],
                 [
                     { text: "Arecanut", font: { size: 11 } },
-                    { text: transactionData.quantity.count.toString(), font: { size: 11 } },
-                    { text: "Kilogram", font: { size: 11 } },
+                    { text: "       ", font: { size: 11 } },
+                    { text: transactionData.quantity.count.toString() + " Kilogram", font: { size: 11 } },
                     { text: transactionData.rate.toString(), font: { size: 11 } },
-                    { text: "5%", font: { size: 11 } },
+                    { text: `${transactionData.gstPercentage}%`, font: { size: 11 } },
                     { text: igst.toString(), font: { size: 11 } },
                     { text: amount.toString(), font: { size: 11 } },
                     { text: totalAfterTax.toString(), font: { size: 11 } }
@@ -114,7 +124,7 @@ export class PdfService {
                     { text: `${toWords.convert(totalAfterTax)} Rupees Only` , colSpan: 3, font: { size: 11 } }
                 ],
                 [
-                    { text: "Bank Details", colSpan: 3, font: { size: 11 } },
+                    { text: `Bank Details (${name})`, colSpan: 3, font: { size: 11 } },
                     { text: `${name} (Authorised Signatory)`, colSpan: 5, rowSpan: 3, align: { x: 'center', y: 'top' }, font: { size: 11 } }
                 ],
                 [

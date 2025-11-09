@@ -5,6 +5,8 @@ export class AddProductDto {
     name: string;
     @ApiProperty()
     description: string;
+    @ApiProperty()
+    hsnCode: string;
 }
 
 export class ProductResponseDto {

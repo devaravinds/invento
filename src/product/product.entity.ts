@@ -11,6 +11,8 @@ export class Product {
     description: string;
     @Prop({ required: true })
     organizationId: string;
+    @Prop({ required: true })
+    hsnCode: string;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

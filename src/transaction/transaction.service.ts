@@ -34,7 +34,7 @@ export class TransactionService extends BaseService<TransactionDocument> {
     }
 
     async addTransaction(organizationId: string, addTransactionDto: AddTransactionDto) {
-        const { productId, outletId, partnerId, rate, transactionType, quantity, transactionStatus, dueDate, paidOn } = addTransactionDto;
+        const { productId, outletId, partnerId, rate, transactionType, quantity, transactionStatus, dueDate, paidOn, gstPercentage } = addTransactionDto;
 
         let decimalQuantity = {
             unit: quantity.unit,
@@ -106,6 +106,7 @@ export class TransactionService extends BaseService<TransactionDocument> {
             partnerId,
             rate,
             quantity,
+            gstPercentage,
             transactionType,
             transactionStatus,
             dueDate,
@@ -139,15 +140,19 @@ export class TransactionService extends BaseService<TransactionDocument> {
         }
 
         existingQuantities.forEach(existingQuantity => {
-            if(existingQuantity.unit === decimalQuantity.unit) {
-                const decimalQuantityNumberCount = decimalQuantity.count.toNumber();
+            let decimalExistingQuantity = {
+                unit: existingQuantity.unit,
+                count: new Decimal(existingQuantity.count)
+            }
+            if(decimalExistingQuantity.unit === decimalQuantity.unit) {
                 if(transactionType == TransactionType.PURCHASE){
-                    existingQuantity.count -= decimalQuantityNumberCount
+                    decimalExistingQuantity.count = decimalExistingQuantity.count.minus(decimalQuantity.count);
                 }
                 else {
-                    existingQuantity.count += decimalQuantityNumberCount
+                    decimalExistingQuantity.count = decimalExistingQuantity.count.plus(decimalQuantity.count);
                 }
             }
+            existingQuantity.count = decimalExistingQuantity.count.toNumber();
         })
 
         await this._inventoryService.updateAvailableQuantity(inventoryItem.id, existingQuantities);
@@ -202,6 +207,7 @@ export class TransactionService extends BaseService<TransactionDocument> {
             dueDate: transaction.dueDate,
             paidOn: transaction.paidOn,
             rate: transaction.rate,
+            gstPercentage: transaction.gstPercentage,
             productId: transaction.productId,
             partnerId: transaction.partnerId,
             outletId: transaction.outletId,

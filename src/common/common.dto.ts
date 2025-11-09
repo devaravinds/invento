@@ -8,6 +8,8 @@ export class AddressDto {
     @ApiProperty()
     city: string;
     @ApiProperty()
+    district: string;
+    @ApiProperty()
     state: string
     @ApiProperty()
     pin: string;
