@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Request, Response } from 'express';
+import { PORT } from './config/system.config';
 
 
 async function bootstrap() {
@@ -18,6 +19,6 @@ async function bootstrap() {
   app.getHttpAdapter().get('/', (req: Request, res: Response) => {
     res.redirect('/api');
   });
-  await app.listen(8080);
+  await app.listen(PORT);
 }
 bootstrap();

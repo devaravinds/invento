@@ -42,10 +42,16 @@ jobs:
             username: ${{ secrets.INVENTO_PROD_SERVER_USER }}
             key: ${{ secrets.LIGHTSAIL_PRIVATE_KEY }}
             script: |
-              sudo docker load -i ~/invento-backend.tar
+              sudo docker load -i ./invento-backend.tar/invento-backend.tar 
               cd ~/invento
               sudo docker compose down
-              sudo docker compose up -d
+              sudo docker run -d \
+                --name invento-backend \
+                --restart always \
+                -p 8080:8080 \
+                --network mongodb_invento-network \
+                invento-backend:latest \
+                npm run start
 
 
 
