@@ -1,0 +1,51 @@
+name: deploy production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+        - name: Checkout repository
+          uses: actions/checkout@v5
+        
+        - name: Create .env file
+          run: |
+            echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+            echo "PORT=3000" >> .env
+            echo "JWT_ACCESS_TOKEN_SECRET_KEY=${{ secrets.JWT_ACCESS_TOKEN_SECRET_KEY }}" >> .env
+            echo "ACCESS_TOKEN_TTL=7d" >> .env
+            echo "SUPER_ADMIN_SECRET_KEY=${{ secrets.SUPER_ADMIN_SECRET_KEY }}" >> .env
+
+        - name: Build docker image
+          run: |
+            docker build -t invento-backend:latest -f Dockerfile .
+            docker save -o invento-backend.tar invento-backend:latest
+
+        - name: Copy to server
+          uses: appleboy/scp-action@v1
+          with:
+            host: ${{ secrets.INVENTO_PROD_SERVER_HOST }}
+            username: ${{ secrets.INVENTO_PROD_SERVER_USER }}
+            key: ${{ secrets.LIGHTSAIL_PRIVATE_KEY }}
+            source: "invento-backend.tar"
+            target: "~/invento-backend.tar"
+
+        - name: Deploy on server
+          uses: appleboy/ssh-action@v1
+          with:
+            host: ${{ secrets.INVENTO_PROD_SERVER_HOST }}
+            username: ${{ secrets.INVENTO_PROD_SERVER_USER }}
+            key: ${{ secrets.LIGHTSAIL_PRIVATE_KEY }}
+            script: |
+              sudo docker load -i ~/invento-backend.tar
+              cd ~/invento
+              sudo docker compose down
+              sudo docker compose up -d
+
+
+
