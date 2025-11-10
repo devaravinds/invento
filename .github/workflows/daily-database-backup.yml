@@ -1,0 +1,22 @@
+name: Daily Database Backup
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  backup:
+    name: Run Remote Database Backup
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Run Backup Script on Remote Server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.INVENTO_PROD_SERVER_HOST }}
+          username: ${{ secrets.INVENTO_PROD_SERVER_USER }}
+          key: ${{ secrets.LIGHTSAIL_PRIVATE_KEY }}
+          script: |
+            sudo bash ./scripts/db-backup.sh
