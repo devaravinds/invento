@@ -14,7 +14,7 @@ export class User {
     phone: string;
     @Prop({ required: true })
     password: string;
-    @Prop({ required: false, unique: true })
+    @Prop()
     email?: string;
     @Prop({type: [Role], default: []})
     roles?: Role[];

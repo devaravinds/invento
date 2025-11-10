@@ -19,7 +19,7 @@ export class UserService extends BaseService<UserDocument> {
         super(_userRepository);
     }
     async register(registerDto: RegisterDto): Promise<string> {
-        if(await this.emailOrPhoneExists(registerDto.email, registerDto.phone)) {
+        if(await this.emailOrPhoneExists(registerDto.phone, registerDto.email)) {
             throw new BadRequestException('Email or phone already exists');
         }
         const newUser: User = {
@@ -37,13 +37,18 @@ export class UserService extends BaseService<UserDocument> {
         }
     }
 
-    async emailOrPhoneExists(email: string, phone: string): Promise<boolean> {
-        try {
-            const user = await this._userRepository.findOne({ $or: [{ email }, { phone }] });
-            return !!user;
-        } catch (error) {
-            throw new InternalServerErrorException(`Error checking email or phone existence: ${error.message}`);
-        }
+    async emailOrPhoneExists(phone?: string, email?: string): Promise<boolean> {
+      try {
+        const conditions = [];
+        conditions.push({ phone });
+        if (email) conditions.push({ email });
+        const user = await this._userRepository.findOne({ $or: conditions });
+        return !!user;
+      } catch (error) {
+        throw new InternalServerErrorException(
+          `Error checking email or phone existence: ${error.message}`,
+        );
+      }
     }
 
     async updateUser(id: string, updateDto: UpdateUserDto): Promise<string> {
